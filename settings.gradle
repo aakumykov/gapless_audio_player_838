@@ -1,0 +1,2 @@
+rootProject.name = "gapless_audio_player_232"
+include ':gapless_audio_player'
