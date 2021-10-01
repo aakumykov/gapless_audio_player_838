@@ -106,6 +106,14 @@ public class GaplessAudioPlayer2 implements MediaPlayer.OnCompletionListener {
         }
     }
 
+    @Nullable
+    public SoundItem getCurrentSoundItem() {
+        return (null != mCurrentPlayer) ?
+                mCurrentPlayer.getSoundItem() :
+                null;
+    }
+
+
 
     private void stopCurrentPlayer() {
         synchronized (SYNC_FLAG) {
