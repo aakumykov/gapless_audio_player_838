@@ -1,6 +1,7 @@
 package com.gitlab.aakumykov.gapless_audio_player;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 public interface iGaplessPlayerCallbacks {
 
@@ -13,5 +14,5 @@ public interface iGaplessPlayerCallbacks {
     void onNoNextTracks();
     void onNoPrevTracks();
 
-    void onError(int errorCode, @NonNull String errorMsg);
+    void onError(int errorCode, @NonNull String errorMsg, @NonNull SoundItem soundItem);
 }

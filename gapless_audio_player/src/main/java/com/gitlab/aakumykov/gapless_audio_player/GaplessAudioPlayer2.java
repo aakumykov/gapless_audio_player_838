@@ -131,13 +131,18 @@ public class GaplessAudioPlayer2 implements MediaPlayer.OnCompletionListener {
     }
 
     private void startCurrentPlayer() {
+
         if (null != mCurrentPlayer) {
+
+            @NonNull
+            SoundItem soundItem = mCurrentPlayer.getSoundItem();
+
             try {
                 mCurrentPlayer.start();
-                mCallbacks.onStarted(mCurrentPlayer.getSoundItem());
+                mCallbacks.onStarted(soundItem);
             }
             catch (Exception e) {
-                mCallbacks.onError(ErrorCodes.PLAYING_ERRROR, ExceptionUtils.getErrorMessage(e));
+                mCallbacks.onError(ErrorCodes.PLAYING_ERRROR, ExceptionUtils.getErrorMessage(e), soundItem);
                 debugLog(e);
             }
         }
@@ -164,7 +169,7 @@ public class GaplessAudioPlayer2 implements MediaPlayer.OnCompletionListener {
                 mPlayersChain.add(player);
             }
             catch (IOException e) {
-                mCallbacks.onError(ErrorCodes.PREPARING_ERRROR, ExceptionUtils.getErrorMessage(e));
+                mCallbacks.onError(ErrorCodes.PREPARING_ERRROR, ExceptionUtils.getErrorMessage(e), soundItem);
                 debugLog(e);
             }
         }
