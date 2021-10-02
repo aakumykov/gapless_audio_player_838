@@ -13,18 +13,22 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GaplessAudioPlayer implements MediaPlayer.OnCompletionListener {
+public class GaplessAudioPlayer {
 
     private static final String TAG = GaplessAudioPlayer.class.getSimpleName();
     private final Object SYNC_FLAG = new Object();
     private Playlist mPlaylist;
     private final List<Player> mPlayersChain = new ArrayList<>();
     @Nullable private Player mCurrentPlayer;
+    private final MediaPlayer.OnCompletionListener mCompletionListener;
     private final iGaplessPlayerCallbacks mCallbacks;
 
 
     public GaplessAudioPlayer(@NonNull iGaplessPlayerCallbacks callbacks) {
+
         mCallbacks = callbacks;
+
+        mCompletionListener = this::onAudioTrackCompleted;
     }
 
 
@@ -122,7 +126,6 @@ public class GaplessAudioPlayer implements MediaPlayer.OnCompletionListener {
     }
 
 
-
     private void stopCurrentPlayer() {
         synchronized (SYNC_FLAG) {
             if (null != mCurrentPlayer) {
@@ -173,7 +176,7 @@ public class GaplessAudioPlayer implements MediaPlayer.OnCompletionListener {
                 Player player = new Player(soundItem);
                 player.setDataSource(soundItem.getFilePath());
                 player.prepare();
-                player.setOnCompletionListener(this);
+                player.setOnCompletionListener(mCompletionListener);
                 mPlayersChain.add(player);
             }
             catch (IOException e) {
@@ -273,10 +276,10 @@ public class GaplessAudioPlayer implements MediaPlayer.OnCompletionListener {
     }
 
 
-    // MediaPlayer.OnCompletionListener
-    @Override
-    public void onCompletion(MediaPlayer mp) {
-        Player player = (Player) mp;
+    // Обработчик MediaPlayer.OnCompletionListener
+    private void onAudioTrackCompleted(@NonNull MediaPlayer mediaPlayer) {
+
+        Player player = (Player) mediaPlayer;
 
         Player nextPlayer = player.getNextPlayer();
 
@@ -288,6 +291,8 @@ public class GaplessAudioPlayer implements MediaPlayer.OnCompletionListener {
         }
     }
 
+
+    // Вспомогательные методы
     private void debugLog(String text) {
         if (BuildConfig.DEBUG)
             Log.d(TAG, text);
@@ -298,8 +303,6 @@ public class GaplessAudioPlayer implements MediaPlayer.OnCompletionListener {
             Log.e(TAG, ExceptionUtils.getErrorMessage(t), t);
     }
 
-
-    // Вспомогательные методы
     private void nothingToPlay() {
         mCallbacks.onCommonError(ErrorCode.NOTHING_TO_PLAY, null);
     }
