@@ -13,9 +13,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GaplessAudioPlayer2 implements MediaPlayer.OnCompletionListener {
+public class GaplessAudioPlayer implements MediaPlayer.OnCompletionListener {
 
-    private static final String TAG = GaplessAudioPlayer2.class.getSimpleName();
+    private static final String TAG = GaplessAudioPlayer.class.getSimpleName();
     private final Object SYNC_FLAG = new Object();
     private Playlist mPlaylist;
     private final List<Player> mPlayersChain = new ArrayList<>();
@@ -23,7 +23,7 @@ public class GaplessAudioPlayer2 implements MediaPlayer.OnCompletionListener {
     private final iGaplessPlayerCallbacks mCallbacks;
 
 
-    public GaplessAudioPlayer2(@NonNull iGaplessPlayerCallbacks callbacks) {
+    public GaplessAudioPlayer(@NonNull iGaplessPlayerCallbacks callbacks) {
         mCallbacks = callbacks;
     }
 
