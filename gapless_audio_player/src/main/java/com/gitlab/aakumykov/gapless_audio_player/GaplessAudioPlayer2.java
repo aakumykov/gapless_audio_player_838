@@ -30,13 +30,13 @@ public class GaplessAudioPlayer2 implements MediaPlayer.OnCompletionListener {
 
     public void play(@NonNull List<SoundItem> soundItemList) {
 
-        if (soundItemList.size() == 0) {
-            mCallbacks.onCommonError("Нечего воспроизводить");
-            return;
+        if (soundItemList.size() > 0) {
+            createPlaylist(soundItemList);
+            playList(soundItemList);
         }
-
-        createPlaylist(soundItemList);
-        playList(soundItemList);
+        else {
+            nothingToPlay();
+        }
     }
 
     public void pause() {
@@ -258,9 +258,14 @@ public class GaplessAudioPlayer2 implements MediaPlayer.OnCompletionListener {
     }
 
     private void playList(List<SoundItem> list) {
+
         setActiveList(list);
         preparePlayers();
-        startCurrentPlayer();
+
+        if (mPlayersChain.size() > 0)
+            startCurrentPlayer();
+        else
+            nothingToPlay();
     }
 
     private void setActiveList(List<SoundItem> list) {
@@ -291,5 +296,11 @@ public class GaplessAudioPlayer2 implements MediaPlayer.OnCompletionListener {
     private void debugLog(Throwable t) {
         if (BuildConfig.DEBUG)
             Log.e(TAG, ExceptionUtils.getErrorMessage(t), t);
+    }
+
+
+    // Вспомогательные методы
+    private void nothingToPlay() {
+        mCallbacks.onCommonError(ErrorCode.NOTHING_TO_PLAY);
     }
 }

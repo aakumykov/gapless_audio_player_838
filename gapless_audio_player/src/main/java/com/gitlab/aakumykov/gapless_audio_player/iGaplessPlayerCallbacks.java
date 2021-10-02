@@ -15,5 +15,5 @@ public interface iGaplessPlayerCallbacks {
 
     void onPreparingError(@NonNull SoundItem soundItem, @NonNull String errorMsg);
     void onPlayingError(@NonNull SoundItem soundItem, @NonNull String errorMsg);
-    void onCommonError(@NonNull String errorMsg);
+    void onCommonError(@NonNull ErrorCode errorCode);
 }
