@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GaplessAudioPlayer {
+public class GaplessAudioPlayer implements iAudioPlayer {
 
     private static final String TAG = GaplessAudioPlayer.class.getSimpleName();
     private final Object SYNC_FLAG = new Object();
@@ -31,7 +31,7 @@ public class GaplessAudioPlayer {
         mCompletionListener = this::onAudioTrackCompleted;
     }
 
-
+    @Override
     public void play(@NonNull List<SoundItem> soundItemList) {
 
         if (soundItemList.size() > 0) {
@@ -43,20 +43,24 @@ public class GaplessAudioPlayer {
         }
     }
 
+    @Override
     public void pause() {
         pauseCurrentPlayer();
     }
 
+    @Override
     public void resume() {
         resumeCurrentPlayer();
     }
 
+    @Override
     public void stop() {
         stopCurrentPlayer();
         clearAllPlayers();
         clearPlaylist();
     }
 
+    @Override
     public void next() {
         if (null != mCurrentPlayer) {
             if (hasNextTrack()) {
@@ -68,6 +72,7 @@ public class GaplessAudioPlayer {
         }
     }
 
+    @Override
     public void prev() {
         if (null != mCurrentPlayer) {
             if (hasPrevTrack()) {
@@ -79,37 +84,31 @@ public class GaplessAudioPlayer {
         }
     }
 
-    private boolean hasNextTrack() {
-        return (null != mCurrentPlayer && null != mCurrentPlayer.getNextPlayer());
-    }
-
-    private boolean hasPrevTrack() {
-        return null != mCurrentPlayer &&
-                null != mCurrentPlayer.getPrevPlayer();
-    }
-
+    @Override
     public void seekTo(int position) {
         if (null != mCurrentPlayer)
             mCurrentPlayer.seekTo(position);
     }
 
+    @Override
     public boolean isInitialized() {
         return null != mPlaylist;
     }
 
+    @Override
     public boolean isPlaying() {
         return (null != mCurrentPlayer && mCurrentPlayer.isPlaying());
     }
 
     // TODO: синхронизация
-    @Nullable
+    @Override @Nullable
     public String getTitle() {
         return (null != mCurrentPlayer) ?
                 mCurrentPlayer.getSoundItem().getTitle() :
                 null;
     }
 
-    @Nullable
+    @Override @Nullable
     public Progress getProgress() {
         synchronized (SYNC_FLAG) {
             return (null != mCurrentPlayer && !mCurrentPlayer.isStopped()) ?
@@ -118,13 +117,22 @@ public class GaplessAudioPlayer {
         }
     }
 
-    @Nullable
-    public SoundItem getCurrentSoundItem() {
+    @Override @Nullable
+    public SoundItem getSoundItem() {
         return (null != mCurrentPlayer) ?
                 mCurrentPlayer.getSoundItem() :
                 null;
     }
 
+
+    private boolean hasNextTrack() {
+        return (null != mCurrentPlayer && null != mCurrentPlayer.getNextPlayer());
+    }
+
+    private boolean hasPrevTrack() {
+        return null != mCurrentPlayer &&
+                null != mCurrentPlayer.getPrevPlayer();
+    }
 
     private void stopCurrentPlayer() {
         synchronized (SYNC_FLAG) {
