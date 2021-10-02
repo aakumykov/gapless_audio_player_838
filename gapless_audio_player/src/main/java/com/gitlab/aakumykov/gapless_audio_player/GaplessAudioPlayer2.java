@@ -29,6 +29,12 @@ public class GaplessAudioPlayer2 implements MediaPlayer.OnCompletionListener {
 
 
     public void play(@NonNull List<SoundItem> soundItemList) {
+
+        if (soundItemList.size() == 0) {
+            mCallbacks.onCommonError("Нечего воспроизводить");
+            return;
+        }
+
         createPlaylist(soundItemList);
         playList(soundItemList);
     }
@@ -48,23 +54,25 @@ public class GaplessAudioPlayer2 implements MediaPlayer.OnCompletionListener {
     }
 
     public void next() {
-        if (hasNextTrack()) {
-            stopCurrentPlayer();
-            shiftPlayersChain();
-            startCurrentPlayer();
+        if (null != mCurrentPlayer) {
+            if (hasNextTrack()) {
+                stopCurrentPlayer();
+                shiftPlayersChain();
+                startCurrentPlayer();
+            } else
+                mCallbacks.onNoNextTracks();
         }
-        else
-            mCallbacks.onNoNextTracks();
     }
 
     public void prev() {
-        if (hasPrevTrack()) {
-            stopCurrentPlayer();
-            unshiftPlayersChain();
-            startCurrentPlayer();
+        if (null != mCurrentPlayer) {
+            if (hasPrevTrack()) {
+                stopCurrentPlayer();
+                unshiftPlayersChain();
+                startCurrentPlayer();
+            } else
+                mCallbacks.onNoPrevTracks();
         }
-        else
-            mCallbacks.onNoPrevTracks();
     }
 
     private boolean hasNextTrack() {
