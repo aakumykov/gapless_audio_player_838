@@ -301,6 +301,6 @@ public class GaplessAudioPlayer2 implements MediaPlayer.OnCompletionListener {
 
     // Вспомогательные методы
     private void nothingToPlay() {
-        mCallbacks.onCommonError(ErrorCode.NOTHING_TO_PLAY);
+        mCallbacks.onCommonError(ErrorCode.NOTHING_TO_PLAY, null);
     }
 }
