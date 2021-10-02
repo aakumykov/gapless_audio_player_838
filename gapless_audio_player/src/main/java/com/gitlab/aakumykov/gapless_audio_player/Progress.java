@@ -10,11 +10,11 @@ public class Progress {
         this.mDuration = mDuration;
     }
 
-    public int getmPosition() {
+    public int getPosition() {
         return mPosition;
     }
 
-    public int getmDuration() {
+    public int getDuration() {
         return mDuration;
     }
 }
