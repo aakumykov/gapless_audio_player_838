@@ -300,11 +300,11 @@ public class WorkingExampleActivity extends AppCompatActivity
 
 
     private void showPlayButton() {
-        mViewBinding.startButton.setImageResource(R.drawable.ic_baseline_play_arrow_24);
+        mViewBinding.startButton.setImageResource(R.drawable.ic_play);
     }
 
     private void showPauseButton() {
-        mViewBinding.startButton.setImageResource(R.drawable.ic_baseline_pause_24);
+        mViewBinding.startButton.setImageResource(R.drawable.ic_pause);
     }
 
     private void enableSeekBar() {
