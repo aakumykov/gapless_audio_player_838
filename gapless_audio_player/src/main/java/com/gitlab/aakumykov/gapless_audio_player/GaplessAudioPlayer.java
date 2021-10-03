@@ -16,6 +16,7 @@ import java.util.List;
 public class GaplessAudioPlayer implements iAudioPlayer {
 
     private static final String TAG = GaplessAudioPlayer.class.getSimpleName();
+    private static final int TRACK_BEGINNING_THRESHOLD_MS = 1000;
     private final Object SYNC_FLAG = new Object();
     private Playlist mPlaylist;
     private final List<Player> mPlayersChain = new ArrayList<>();
@@ -30,6 +31,7 @@ public class GaplessAudioPlayer implements iAudioPlayer {
 
         mCompletionListener = this::onAudioTrackCompleted;
     }
+
 
     @Override
     public void play(@NonNull List<SoundItem> soundItemList) {
@@ -74,13 +76,12 @@ public class GaplessAudioPlayer implements iAudioPlayer {
 
     @Override
     public void prev() {
-        if (null != mCurrentPlayer) {
-            if (hasPrevTrack()) {
-                stopCurrentPlayer();
-                unshiftPlayersChain();
-                startCurrentPlayer();
-            } else
-                mCallbacks.onNoPrevTracks();
+        if (null != mCurrentPlayer)
+        {
+            if (trackIsOnBeginning())
+                skipToPrevTrack();
+            else
+                skipToTrackBeginning();
         }
     }
 
@@ -124,6 +125,32 @@ public class GaplessAudioPlayer implements iAudioPlayer {
                 null;
     }
 
+
+
+    private boolean trackIsOnBeginning() {
+        if (null == mCurrentPlayer)
+            throw new IllegalStateException("Плеер не инициализирован");
+
+        int position = mCurrentPlayer.getCurrentPosition();
+        debugLog("position: "+position);
+
+        return position <= TRACK_BEGINNING_THRESHOLD_MS;
+    }
+
+    private void skipToPrevTrack() {
+        if (hasPrevTrack()) {
+            stopCurrentPlayer();
+            unshiftPlayersChain();
+            startCurrentPlayer();
+        } else
+            mCallbacks.onNoPrevTracks();
+    }
+
+    private void skipToTrackBeginning() {
+        if (null == mCurrentPlayer)
+            throw new IllegalStateException("Плеер не инициализирован");
+        mCurrentPlayer.seekTo(0);
+    }
 
     private boolean hasNextTrack() {
         return (null != mCurrentPlayer && null != mCurrentPlayer.getNextPlayer());
@@ -248,8 +275,8 @@ public class GaplessAudioPlayer implements iAudioPlayer {
 
     private void unshiftPlayersChain() {
         if (null != mCurrentPlayer) {
-            List<SoundItem> subList = mPlaylist.getUnshiftedListFrom(
-                    mCurrentPlayer.getSoundItem());
+            SoundItem currentSoundItem = mCurrentPlayer.getSoundItem();
+            List<SoundItem> subList = mPlaylist.getUnshiftedListFrom(currentSoundItem);
             playList(subList);
         }
     }
