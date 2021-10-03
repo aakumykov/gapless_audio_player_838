@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">app</string>
+    <string name="nothing_to_play">Нечего воспроизводить</string>
+    <string name="unknown_error">Неизвестная ошибка</string>
+    <string name="detailed_error">%1$s:\n%2$s</string>
+    <string name="no_more_tracks">Треков больше нет</string>
+    <string name="this_is_first_track">Это первый трек</string>
+</resources>
