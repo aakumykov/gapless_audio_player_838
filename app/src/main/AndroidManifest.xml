@@ -10,7 +10,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Gapless_audio_player_232">
+        android:theme="@style/Theme.Gapless_audio_player_838">
 
         <activity
             android:name=".WorkingExampleActivity"
