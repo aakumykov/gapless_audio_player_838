@@ -1,5 +1,7 @@
 package com.gitlab.aakumykov.gapless_audio_player;
 
+import androidx.annotation.Nullable;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,5 +38,11 @@ public class Playlist {
             return mOriginalItemsList.stream().skip(listSize-prevItemIndex).collect(Collectors.toList());
         else
             return new ArrayList<>(mOriginalItemsList);
+    }
+
+    public boolean hasPrevItemFrom(@Nullable SoundItem currentSoundItem) {
+        if (null == currentSoundItem)
+            return false;
+        return mOriginalItemsList.indexOf(currentSoundItem) - 1 >= 0;
     }
 }

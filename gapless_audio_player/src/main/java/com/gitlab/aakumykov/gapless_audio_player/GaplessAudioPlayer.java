@@ -157,8 +157,10 @@ public class GaplessAudioPlayer implements iAudioPlayer {
     }
 
     private boolean hasPrevTrack() {
-        return null != mCurrentPlayer &&
-                null != mCurrentPlayer.getPrevPlayer();
+        @Nullable
+        SoundItem currentSoundItem = getSoundItem();
+
+        return mPlaylist.hasPrevItemFrom(currentSoundItem);
     }
 
     private void stopCurrentPlayer() {
