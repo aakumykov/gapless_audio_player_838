@@ -6,6 +6,7 @@ public class SoundItem {
 
     @NonNull private final String mTitle;
     @NonNull private final String mFilePath;
+    private boolean mIsCorrupted;
 
     public SoundItem(@NonNull String title, @NonNull String filePath) {
         this.mTitle = title;
@@ -22,11 +23,21 @@ public class SoundItem {
         return mTitle;
     }
 
-    @NonNull @Override
-    public String toString() {
-        return SoundItem.class.getSimpleName() + " { " +
-                "title: " + mTitle + ", " +
-                "filePath: " + mFilePath +
-                " }";
+//    @NonNull @Override
+//    public String toString() {
+//        return SoundItem.class.getSimpleName() + " { " +
+//                "title: " + mTitle + ", " +
+//                "filePath: " + mFilePath +
+//                " }";
+//    }
+
+
+
+    public void markIsCorrupted() {
+        mIsCorrupted = true;
+    }
+
+    public boolean isCorrupted() {
+        return mIsCorrupted;
     }
 }

@@ -35,15 +35,27 @@ public class Playlist {
             prevItemIndex = 0;
 
         if (prevItemIndex > 0)
-            return mOriginalItemsList.stream().skip(listSize-prevItemIndex).collect(Collectors.toList());
+            return mOriginalItemsList.stream().skip(prevItemIndex).collect(Collectors.toList());
         else
             return new ArrayList<>(mOriginalItemsList);
     }
 
-    public boolean hasPrevItemFrom(@Nullable SoundItem currentSoundItem) {
-        if (null == currentSoundItem)
+    public boolean hasPrevItemFrom(@Nullable SoundItem soundItem) {
+
+        if (null == soundItem)
             return false;
-        int prevItemIndex = mOriginalItemsList.indexOf(currentSoundItem) - 1;
-        return prevItemIndex >= 0;
+
+        int prevItemIndex = mOriginalItemsList.indexOf(soundItem) - 1;
+
+        if (prevItemIndex >= 0) {
+            SoundItem prevItem = mOriginalItemsList.get(prevItemIndex);
+            if (prevItem.isCorrupted())
+                return hasPrevItemFrom(prevItem);
+            else
+                return true;
+        }
+        else {
+            return false;
+        }
     }
 }
