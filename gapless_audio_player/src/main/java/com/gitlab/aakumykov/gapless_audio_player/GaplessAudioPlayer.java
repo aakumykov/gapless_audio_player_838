@@ -159,6 +159,7 @@ public class GaplessAudioPlayer implements iAudioPlayer {
     private boolean hasPrevTrack() {
         @Nullable
         SoundItem currentSoundItem = getSoundItem();
+
         return mPlaylist.hasPrevItemFrom(currentSoundItem);
     }
 
@@ -216,7 +217,6 @@ public class GaplessAudioPlayer implements iAudioPlayer {
                 mPlayersChain.add(player);
             }
             catch (IOException e) {
-                soundItem.markIsCorrupted();
                 mCallbacks.onPreparingError(soundItem, ExceptionUtils.getErrorMessage(e));
                 debugLog(e);
             }
