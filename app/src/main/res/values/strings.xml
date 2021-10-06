@@ -5,4 +5,6 @@
     <string name="detailed_error">%1$s:\n%2$s</string>
     <string name="no_more_tracks">Треков больше нет</string>
     <string name="this_is_first_track">Это первый трек</string>
+    <string name="preparing_error">Ошибка подготовки трека:\n%1$s</string>
+    <string name="playing_error">Ошибка воспроизведения \n%1$s:\n%2$s</string>
 </resources>

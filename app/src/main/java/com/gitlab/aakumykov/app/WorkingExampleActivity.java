@@ -40,6 +40,9 @@ public class WorkingExampleActivity extends AppCompatActivity
 
     private final String[] mMusicList = {
 
+            "Gazebo1.mp3",
+            "Gazebo20.mp3",
+            "Gazebo30.mp3",
             "Africa.mp3",
             "Rhythm.mp3",
             "Кортнев.mp3"
@@ -208,12 +211,12 @@ public class WorkingExampleActivity extends AppCompatActivity
 
     @Override
     public void onPreparingError(@NonNull SoundItem soundItem, @NonNull String errorMsg) {
-
+        showToast(getString(R.string.preparing_error, soundItem.getTitle()));
     }
 
     @Override
     public void onPlayingError(@NonNull SoundItem soundItem, @NonNull String errorMsg) {
-
+        showToast(getString(R.string.playing_error, soundItem.getTitle(), errorMsg));
     }
 
     @Override
