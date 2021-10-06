@@ -1,5 +1,6 @@
 package com.gitlab.aakumykov.gapless_audio_player;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
@@ -8,22 +9,14 @@ import java.util.stream.Collectors;
 
 public class Playlist {
 
-    private final List<SoundItem> mOriginalItemsList;
-    private final List<SoundItem> mCurrentItemsList = new ArrayList<>();
+    private final List<SoundItem> mOriginalItemsList = new ArrayList<>();
+    private boolean mIsFilled = false;
 
 
-    public Playlist(List<SoundItem> originalItemsList) {
-        mOriginalItemsList = new ArrayList<>(originalItemsList);
+    public Playlist() {
+
     }
 
-    public void setActiveList(List<SoundItem> list) {
-        mCurrentItemsList.clear();
-        mCurrentItemsList.addAll(list);
-    }
-
-    public List<SoundItem> getActiveList() {
-        return mCurrentItemsList;
-    }
 
     public List<SoundItem> getUnshiftedListFrom(SoundItem soundItem) {
 
@@ -45,5 +38,14 @@ public class Playlist {
             return false;
         int prevItemIndex = mOriginalItemsList.indexOf(currentSoundItem) - 1;
         return prevItemIndex >= 0;
+    }
+
+    public void addAtFirstTime(@NonNull SoundItem soundItem) {
+        if (!mIsFilled)
+            mOriginalItemsList.add(soundItem);
+    }
+
+    public void markAsFilled() {
+        mIsFilled = true;
     }
 }

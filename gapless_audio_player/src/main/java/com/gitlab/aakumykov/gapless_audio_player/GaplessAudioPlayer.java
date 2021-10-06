@@ -18,11 +18,12 @@ public class GaplessAudioPlayer implements iAudioPlayer {
     private static final String TAG = GaplessAudioPlayer.class.getSimpleName();
     private static final int TRACK_BEGINNING_THRESHOLD_MS = 1000;
     private final Object SYNC_FLAG = new Object();
-    private Playlist mPlaylist;
+    private Playlist mPlaylist = new Playlist();
     private final List<Player> mPlayersChain = new ArrayList<>();
     @Nullable private Player mCurrentPlayer;
     private final MediaPlayer.OnCompletionListener mCompletionListener;
     private final iGaplessPlayerCallbacks mCallbacks;
+    private boolean mIsInitialized = false;
 
 
     public GaplessAudioPlayer(@NonNull iGaplessPlayerCallbacks callbacks) {
@@ -36,13 +37,10 @@ public class GaplessAudioPlayer implements iAudioPlayer {
     @Override
     public void play(@NonNull List<SoundItem> soundItemList) {
 
-        if (soundItemList.size() > 0) {
-            createPlaylist(soundItemList);
+        if (soundItemList.size() > 0)
             playList(soundItemList);
-        }
-        else {
+        else
             nothingToPlay();
-        }
     }
 
     @Override
@@ -93,7 +91,7 @@ public class GaplessAudioPlayer implements iAudioPlayer {
 
     @Override
     public boolean isInitialized() {
-        return null != mPlaylist;
+        return mIsInitialized;
     }
 
     @Override
@@ -196,31 +194,34 @@ public class GaplessAudioPlayer implements iAudioPlayer {
         }
     }
 
-    private void createPlaylist(@NonNull List<SoundItem> soundItemList) {
-        mPlaylist = new Playlist(soundItemList);
-    }
-
-    private void preparePlayers() {
-        createPlayers();
+    private void preparePlayers(@NonNull List<SoundItem> soundItemsList) {
+        createPlayersAndFillPlaylist(soundItemsList);
         linkPlayersToChain();
     }
 
-    private void createPlayers() {
+    private void createPlayersAndFillPlaylist(@NonNull List<SoundItem> soundItemsList) {
+
         mPlayersChain.clear();
 
-        for (SoundItem soundItem : mPlaylist.getActiveList()) {
+        for (SoundItem soundItem : soundItemsList) {
             try {
                 Player player = new Player(soundItem);
                 player.setDataSource(soundItem.getFilePath());
                 player.prepare();
                 player.setOnCompletionListener(mCompletionListener);
                 mPlayersChain.add(player);
+
+                mPlaylist.addAtFirstTime(soundItem);
             }
             catch (IOException e) {
                 mCallbacks.onPreparingError(soundItem, ExceptionUtils.getErrorMessage(e));
                 debugLog(e);
             }
         }
+
+        mPlaylist.markAsFilled();
+
+        mIsInitialized = true;
 
         if (mPlayersChain.size() > 0)
             mCurrentPlayer = mPlayersChain.get(0);
@@ -299,17 +300,12 @@ public class GaplessAudioPlayer implements iAudioPlayer {
 
     private void playList(List<SoundItem> list) {
 
-        setActiveList(list);
-        preparePlayers();
+        preparePlayers(list);
 
         if (mPlayersChain.size() > 0)
             startCurrentPlayer();
         else
             nothingToPlay();
-    }
-
-    private void setActiveList(List<SoundItem> list) {
-        mPlaylist.setActiveList(list);
     }
 
 
