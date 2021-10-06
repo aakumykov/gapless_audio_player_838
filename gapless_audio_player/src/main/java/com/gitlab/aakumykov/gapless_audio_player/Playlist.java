@@ -43,6 +43,7 @@ public class Playlist {
     public boolean hasPrevItemFrom(@Nullable SoundItem currentSoundItem) {
         if (null == currentSoundItem)
             return false;
-        return mOriginalItemsList.indexOf(currentSoundItem) - 1 >= 0;
+        int prevItemIndex = mOriginalItemsList.indexOf(currentSoundItem) - 1;
+        return prevItemIndex >= 0;
     }
 }
