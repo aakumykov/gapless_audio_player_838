@@ -58,6 +58,7 @@ public class GaplessAudioPlayer implements iAudioPlayer {
         stopCurrentPlayer();
         clearAllPlayers();
         clearPlaylist();
+
         mIsInitialized = false;
     }
 
@@ -65,9 +66,13 @@ public class GaplessAudioPlayer implements iAudioPlayer {
     public void next() {
         if (null != mCurrentPlayer) {
             if (mPlaylist.hasNextItem()) {
-                stopCurrentPlayer();
-                shiftPlayersChain();
-                startCurrentPlayer();
+//                stopCurrentPlayer();
+//                shiftPlayersChain();
+//                start();
+
+                release();
+                shift();
+                start();
             } else
                 mCallbacks.onNoNextTracks();
         }
@@ -125,6 +130,14 @@ public class GaplessAudioPlayer implements iAudioPlayer {
     }
 
 
+    private void release() {
+        synchronized (SYNC_FLAG) {
+            if (null != mCurrentPlayer) {
+                mCurrentPlayer.release();
+                mCallbacks.onStopped();
+            }
+        }
+    }
 
     private boolean trackIsOnBeginning() {
 
@@ -140,9 +153,9 @@ public class GaplessAudioPlayer implements iAudioPlayer {
     private void skipToPrevTrack() {
 
         if (mPlaylist.hasPrevItem()) {
-            stopCurrentPlayer();
-            unshiftPlayersChain();
-            startCurrentPlayer();
+            release();
+            unshift();
+            start();
         }
         else {
             mCallbacks.onNoPrevTracks();
@@ -155,27 +168,18 @@ public class GaplessAudioPlayer implements iAudioPlayer {
         mCurrentPlayer.seekTo(0);
     }
 
-    private boolean hasNextTrack() {
-        return (null != mCurrentPlayer && null != mCurrentPlayer.getNextPlayer());
-    }
-
     private void stopCurrentPlayer() {
         synchronized (SYNC_FLAG) {
             if (null != mCurrentPlayer) {
                 mCurrentPlayer.stop();
                 mCurrentPlayer.release();
-//                mCurrentPlayer = null;
+                mCurrentPlayer = null;
                 mCallbacks.onStopped();
             }
         }
     }
 
-    private void shiftPlayersChain() {
-        if (null != mCurrentPlayer)
-            mCurrentPlayer = mCurrentPlayer.getNextPlayer();
-    }
-
-    private void startCurrentPlayer() {
+    private void start() {
         if (null != mCurrentPlayer) {
 
             @NonNull
@@ -275,7 +279,15 @@ public class GaplessAudioPlayer implements iAudioPlayer {
         firstPlayer.setNextMediaPlayer(secondPlayer);
     }
 
-    private void unshiftPlayersChain() {
+    private void shift() {
+        synchronized (SYNC_FLAG) {
+            if (null != mCurrentPlayer) {
+                mCurrentPlayer = mCurrentPlayer.getNextPlayer();
+            }
+        }
+    }
+
+    private void unshift() {
         if (null != mCurrentPlayer) {
             List<SoundItem> subList = mPlaylist.getUnshiftedList();
             playList(subList);
@@ -301,7 +313,7 @@ public class GaplessAudioPlayer implements iAudioPlayer {
         prepareTracksAndPlayers(list);
 
         if (mPlayersChain.size() > 0)
-            startCurrentPlayer();
+            start();
         else
             nothingToPlay();
     }

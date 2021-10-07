@@ -98,11 +98,6 @@ public class WorkingExampleActivity extends AppCompatActivity
         mAudioPlayer.resume();
     }
 
-    /*@Override
-    protected void onStop() {
-        super.onStop();
-    }*/
-
 
     @NeedsPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
     void playMusicList() {
@@ -140,13 +135,11 @@ public class WorkingExampleActivity extends AppCompatActivity
     }
 
     private void onNextButtonClicked(View view) {
-        if (mAudioPlayer.isInitialized())
-            mAudioPlayer.next();
+        mAudioPlayer.next();
     }
 
     private void onPrevButtonClicked(View view) {
-        if (mAudioPlayer.isInitialized())
-            mAudioPlayer.prev();
+        mAudioPlayer.prev();
     }
 
     private void onIncreaseVolumeButtonClicked(View view) {
