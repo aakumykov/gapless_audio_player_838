@@ -5,12 +5,12 @@ import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class Playlist {
 
-    private final List<SoundItem> mOriginalItemsList = new ArrayList<>();
+    private final List<PlaylistItem> mItemsList = new ArrayList<>();
     private boolean mIsFilled = false;
+    private PlaylistItem mActiveItem;
 
 
     public Playlist() {
@@ -18,34 +18,75 @@ public class Playlist {
     }
 
 
-    public List<SoundItem> getUnshiftedListFrom(SoundItem soundItem) {
-
-        int listSize = mOriginalItemsList.indexOf(soundItem);
-
-        int prevItemIndex = listSize - 1;
-
-        if (prevItemIndex < 0)
-            prevItemIndex = 0;
-
-        if (prevItemIndex > 0)
-            return mOriginalItemsList.stream().skip(listSize-prevItemIndex).collect(Collectors.toList());
-        else
-            return new ArrayList<>(mOriginalItemsList);
-    }
-
-    public boolean hasPrevItemFrom(@Nullable SoundItem currentSoundItem) {
-        if (null == currentSoundItem)
-            return false;
-        int prevItemIndex = mOriginalItemsList.indexOf(currentSoundItem) - 1;
-        return prevItemIndex >= 0;
-    }
-
-    public void addAtFirstTime(@NonNull SoundItem soundItem) {
+    public void addIfNotFilled(@NonNull SoundItem soundItem) {
         if (!mIsFilled)
-            mOriginalItemsList.add(soundItem);
+            mItemsList.add(new PlaylistItem(soundItem));
     }
 
     public void markAsFilled() {
         mIsFilled = true;
+    }
+
+    public void setActiveItem(@NonNull SoundItem soundItem) {
+        mActiveItem = new PlaylistItem(soundItem);
+    }
+
+    public void reset() {
+        mIsFilled = false;
+        mActiveItem = null;
+        mItemsList.clear();
+    }
+
+    public List<SoundItem> getUnshiftedList() {
+
+        int activeItemIndex = mItemsList.indexOf(mActiveItem);
+
+        /*if (activeItemIndex < 0) {
+            throw new IllegalStateException("Active item not found in list.");
+        }
+        if (0 == activeItemIndex) {
+            return mItemsList.stream().map(playlistItem -> new SoundItem(
+                    playlistItem.getTitle(),
+                    playlistItem.getFilePath()
+            )).collect(Collectors.toList());
+        }
+        else {
+            return mItemsList.stream().skip(activeItemIndex-1).collect(Collectors.toList());
+        }*/
+
+        return null;
+    }
+
+    public boolean hasPrevItem() {
+        return (null != mActiveItem && null != mActiveItem.getPrevItem());
+    }
+
+
+    private static class PlaylistItem extends ChainItem {
+
+        @Nullable private ChainItem mPrevItem;
+        @Nullable private ChainItem mNextItem;
+
+        public PlaylistItem(@NonNull ChainItem soundItem) {
+
+        }
+
+        public void setPrevItem(@Nullable ChainItem prevItem) {
+            mPrevItem = prevItem;
+        }
+
+        public void setNextItem(@Nullable ChainItem nextItem) {
+            mNextItem = nextItem;
+        }
+
+        @Nullable
+        public ChainItem getPrevItem() {
+            return mPrevItem;
+        }
+
+        @Nullable
+        public ChainItem getNextItem() {
+            return mNextItem;
+        }
     }
 }
