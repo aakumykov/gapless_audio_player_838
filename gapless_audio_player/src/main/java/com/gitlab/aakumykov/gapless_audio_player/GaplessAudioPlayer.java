@@ -18,13 +18,13 @@ public class GaplessAudioPlayer implements iAudioPlayer {
     private static final String TAG = GaplessAudioPlayer.class.getSimpleName();
     private static final int TRACK_BEGINNING_THRESHOLD_MS = 1000;
     private final Object SYNC_FLAG = new Object();
-    private Playlist mPlaylist = new Playlist();
+    private final Playlist mPlaylist = new Playlist();
     private final List<Player> mPlayersChain = new ArrayList<>();
     @Nullable private Player mCurrentPlayer;
     private final MediaPlayer.OnCompletionListener mCompletionListener;
     private final iGaplessPlayerCallbacks mCallbacks;
     private boolean mIsInitialized = false;
-
+    private boolean mIsPlaying = false;
 
     public GaplessAudioPlayer(@NonNull iGaplessPlayerCallbacks callbacks) {
 
@@ -63,23 +63,21 @@ public class GaplessAudioPlayer implements iAudioPlayer {
     }
 
     @Override
-    public void next() {
-        if (null != mCurrentPlayer) {
+    public synchronized void next() {
+        if (null != mCurrentPlayer)
+        {
             if (mPlaylist.hasNextItem()) {
-//                stopCurrentPlayer();
-//                shiftPlayersChain();
-//                start();
-
                 release();
                 shift();
                 start();
-            } else
+            }
+            else
                 mCallbacks.onNoNextTracks();
         }
     }
 
     @Override
-    public void prev() {
+    public synchronized void prev() {
         if (null != mCurrentPlayer)
         {
             if (trackIsOnBeginning())
@@ -90,56 +88,70 @@ public class GaplessAudioPlayer implements iAudioPlayer {
     }
 
     @Override
-    public void seekTo(int position) {
+    public synchronized void seekTo(int position) {
         if (null != mCurrentPlayer)
             mCurrentPlayer.seekTo(position);
     }
 
     @Override
-    public boolean isInitialized() {
+    public synchronized boolean isInitialized() {
         return mIsInitialized;
     }
 
     @Override
-    public boolean isPlaying() {
+    public synchronized boolean isPlaying() {
         return (null != mCurrentPlayer && mCurrentPlayer.isPlaying());
     }
 
-    // TODO: синхронизация
     @Override @Nullable
-    public String getTitle() {
+    public synchronized String getTitle() {
         return (null != mCurrentPlayer) ?
                 mCurrentPlayer.getSoundItem().getTitle() :
                 null;
     }
 
     @Override @Nullable
-    public Progress getProgress() {
-        synchronized (SYNC_FLAG) {
-            return (null != mCurrentPlayer && !mCurrentPlayer.isStopped()) ?
-                    new Progress(mCurrentPlayer.getCurrentPosition(), mCurrentPlayer.getDuration()) :
-                    null;
-        }
+    public synchronized Progress getProgress() {
+        return (null != mCurrentPlayer && !mCurrentPlayer.isStopped()) ?
+                new Progress(mCurrentPlayer.getCurrentPosition(), mCurrentPlayer.getDuration()) :
+                null;
     }
 
     @Override @Nullable
-    public SoundItem getSoundItem() {
+    public synchronized SoundItem getSoundItem() {
         return (null != mCurrentPlayer) ?
                 mCurrentPlayer.getSoundItem() :
                 null;
     }
 
 
-    private void release() {
-        synchronized (SYNC_FLAG) {
-            if (null != mCurrentPlayer) {
-                mCurrentPlayer.release();
-                mCallbacks.onStopped();
+    private synchronized void start() {
+        if (null != mCurrentPlayer) {
+
+                @NonNull SoundItem soundItem = mCurrentPlayer.getSoundItem();
+
+                mPlaylist.setActiveItem(soundItem);
+
+                try {
+                    mCurrentPlayer.start();
+                    mIsPlaying = true;
+                    mCallbacks.onStarted(soundItem);
+                }
+                catch (Exception e) {
+                    mCallbacks.onPlayingError(soundItem, ExceptionUtils.getErrorMessage(e));
+                    debugLog(e);
+                }
             }
+    }
+
+    private synchronized void release() {
+        if (null != mCurrentPlayer) {
+            mCurrentPlayer.release();
+            mCallbacks.onStopped();
         }
     }
 
-    private boolean trackIsOnBeginning() {
+    private synchronized boolean trackIsOnBeginning() {
 
         if (null == mCurrentPlayer)
             throw new IllegalStateException("Плеер не инициализирован");
@@ -150,8 +162,7 @@ public class GaplessAudioPlayer implements iAudioPlayer {
         return position <= TRACK_BEGINNING_THRESHOLD_MS;
     }
 
-    private void skipToPrevTrack() {
-
+    private synchronized void skipToPrevTrack() {
         if (mPlaylist.hasPrevItem()) {
             release();
             unshift();
@@ -162,40 +173,19 @@ public class GaplessAudioPlayer implements iAudioPlayer {
         }
     }
 
-    private void skipToTrackBeginning() {
+    private synchronized void skipToTrackBeginning() {
         if (null == mCurrentPlayer)
             throw new IllegalStateException("Плеер не инициализирован");
         mCurrentPlayer.seekTo(0);
     }
 
-    private void stopCurrentPlayer() {
-        synchronized (SYNC_FLAG) {
-            if (null != mCurrentPlayer) {
+    private synchronized void stopCurrentPlayer() {
+        if (null != mCurrentPlayer) {
                 mCurrentPlayer.stop();
                 mCurrentPlayer.release();
                 mCurrentPlayer = null;
                 mCallbacks.onStopped();
             }
-        }
-    }
-
-    private void start() {
-        if (null != mCurrentPlayer) {
-
-            @NonNull
-            SoundItem soundItem = mCurrentPlayer.getSoundItem();
-
-            mPlaylist.setActiveItem(soundItem);
-
-            try {
-                mCurrentPlayer.start();
-                mCallbacks.onStarted(soundItem);
-            }
-            catch (Exception e) {
-                mCallbacks.onPlayingError(soundItem, ExceptionUtils.getErrorMessage(e));
-                debugLog(e);
-            }
-        }
     }
 
     private void prepareTracksAndPlayers(@NonNull List<SoundItem> soundItemsList) {
@@ -240,6 +230,46 @@ public class GaplessAudioPlayer implements iAudioPlayer {
         mPlaylist.reset();
     }
 
+    private synchronized void shift() {
+        if (null != mCurrentPlayer) {
+            mCurrentPlayer = mCurrentPlayer.getNextPlayer();
+        }
+    }
+
+    private synchronized void unshift() {
+        if (null != mCurrentPlayer) {
+            List<SoundItem> subList = mPlaylist.getUnshiftedList();
+            playList(subList);
+        }
+    }
+
+    private synchronized void resumeCurrentPlayer() {
+        if (null != mCurrentPlayer) {
+            mCurrentPlayer.start();
+            mIsPlaying = true;
+            mCallbacks.onResumed();
+        }
+    }
+
+    private synchronized void  pauseCurrentPlayer() {
+        if (null != mCurrentPlayer) {
+            mCurrentPlayer.pause();
+            mCallbacks.onPaused();
+        }
+    }
+
+    private void playList(List<SoundItem> list) {
+
+        prepareTracksAndPlayers(list);
+
+        if (mPlayersChain.size() > 0)
+            start();
+        else
+            nothingToPlay();
+    }
+
+
+    // Объединение плееров в цепочку
     private void linkPlayersToChain() {
 
         int chainSize = mPlayersChain.size();
@@ -279,44 +309,6 @@ public class GaplessAudioPlayer implements iAudioPlayer {
         firstPlayer.setNextMediaPlayer(secondPlayer);
     }
 
-    private void shift() {
-        synchronized (SYNC_FLAG) {
-            if (null != mCurrentPlayer) {
-                mCurrentPlayer = mCurrentPlayer.getNextPlayer();
-            }
-        }
-    }
-
-    private void unshift() {
-        if (null != mCurrentPlayer) {
-            List<SoundItem> subList = mPlaylist.getUnshiftedList();
-            playList(subList);
-        }
-    }
-
-    private void resumeCurrentPlayer() {
-        if (null != mCurrentPlayer) {
-            mCurrentPlayer.start();
-            mCallbacks.onResumed();
-        }
-    }
-
-    private void pauseCurrentPlayer() {
-        if (null != mCurrentPlayer) {
-            mCurrentPlayer.pause();
-            mCallbacks.onPaused();
-        }
-    }
-
-    private void playList(List<SoundItem> list) {
-
-        prepareTracksAndPlayers(list);
-
-        if (mPlayersChain.size() > 0)
-            start();
-        else
-            nothingToPlay();
-    }
 
 
     // Обработчик MediaPlayer.OnCompletionListener
