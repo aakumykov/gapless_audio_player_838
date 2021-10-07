@@ -6,7 +6,7 @@ public interface iAudioPlayer {
 
     void play(List<SoundItem> soundItemList);
     void stop();
-    void pause();
+    void pause(boolean fromUser);
     void resume();
     void next();
     void prev();

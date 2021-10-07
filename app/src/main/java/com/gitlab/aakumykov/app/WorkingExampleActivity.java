@@ -89,13 +89,14 @@ public class WorkingExampleActivity extends AppCompatActivity
     @Override
     protected void onPause() {
         super.onPause();
-        mAudioPlayer.pause();
+        mAudioPlayer.pause(false);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        mAudioPlayer.resume();
+        if (mAudioPlayer.isPlaying())
+            mAudioPlayer.resume();
     }
 
 
@@ -120,7 +121,7 @@ public class WorkingExampleActivity extends AppCompatActivity
 
         if (mAudioPlayer.isInitialized()) {
             if (mAudioPlayer.isPlaying())
-                mAudioPlayer.pause();
+                mAudioPlayer.pause(true);
             else
                 mAudioPlayer.resume();
         }

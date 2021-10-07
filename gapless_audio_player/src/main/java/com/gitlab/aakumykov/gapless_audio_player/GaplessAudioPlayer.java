@@ -44,8 +44,11 @@ public class GaplessAudioPlayer implements iAudioPlayer {
     }
 
     @Override
-    public void pause() {
+    public void pause(boolean fromUser) {
         pauseCurrentPlayer();
+
+        if (fromUser)
+            mIsPlaying = false;
     }
 
     @Override
@@ -58,8 +61,6 @@ public class GaplessAudioPlayer implements iAudioPlayer {
         stopCurrentPlayer();
         clearAllPlayers();
         clearPlaylist();
-
-        mIsInitialized = false;
     }
 
     @Override
@@ -100,7 +101,8 @@ public class GaplessAudioPlayer implements iAudioPlayer {
 
     @Override
     public synchronized boolean isPlaying() {
-        return (null != mCurrentPlayer && mCurrentPlayer.isPlaying());
+//        return (null != mCurrentPlayer && mCurrentPlayer.isPlaying());
+        return mIsPlaying;
     }
 
     @Override @Nullable
@@ -147,6 +149,7 @@ public class GaplessAudioPlayer implements iAudioPlayer {
     private synchronized void release() {
         if (null != mCurrentPlayer) {
             mCurrentPlayer.release();
+            mIsPlaying = false;
             mCallbacks.onStopped();
         }
     }
@@ -184,6 +187,9 @@ public class GaplessAudioPlayer implements iAudioPlayer {
                 mCurrentPlayer.stop();
                 mCurrentPlayer.release();
                 mCurrentPlayer = null;
+
+                mIsInitialized = false;
+                mIsPlaying = false;
                 mCallbacks.onStopped();
             }
     }
