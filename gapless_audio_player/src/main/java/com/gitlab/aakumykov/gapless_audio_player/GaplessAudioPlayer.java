@@ -58,12 +58,13 @@ public class GaplessAudioPlayer implements iAudioPlayer {
         stopCurrentPlayer();
         clearAllPlayers();
         clearPlaylist();
+        mIsInitialized = false;
     }
 
     @Override
     public void next() {
         if (null != mCurrentPlayer) {
-            if (hasNextTrack()) {
+            if (mPlaylist.hasNextItem()) {
                 stopCurrentPlayer();
                 shiftPlayersChain();
                 startCurrentPlayer();
@@ -126,6 +127,7 @@ public class GaplessAudioPlayer implements iAudioPlayer {
 
 
     private boolean trackIsOnBeginning() {
+
         if (null == mCurrentPlayer)
             throw new IllegalStateException("Плеер не инициализирован");
 
@@ -162,6 +164,7 @@ public class GaplessAudioPlayer implements iAudioPlayer {
             if (null != mCurrentPlayer) {
                 mCurrentPlayer.stop();
                 mCurrentPlayer.release();
+//                mCurrentPlayer = null;
                 mCallbacks.onStopped();
             }
         }
@@ -315,6 +318,7 @@ public class GaplessAudioPlayer implements iAudioPlayer {
             stop();
         else {
             mCurrentPlayer = nextPlayer;
+            mPlaylist.setActiveItem(mCurrentPlayer.getSoundItem());
             mCallbacks.onStarted(mCurrentPlayer.getSoundItem());
         }
     }

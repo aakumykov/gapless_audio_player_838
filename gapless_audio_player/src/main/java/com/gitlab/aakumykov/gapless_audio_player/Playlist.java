@@ -1,10 +1,11 @@
 package com.gitlab.aakumykov.gapless_audio_player;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class Playlist {
 
@@ -25,10 +26,23 @@ public class Playlist {
 
     public void markAsFilled() {
         mIsFilled = true;
+        ChainItem.mergeItemsIntoChain(mItemsList);
     }
 
     public void setActiveItem(@NonNull SoundItem soundItem) {
-        mActiveItem = new PlaylistItem(soundItem);
+
+        mActiveItem = null;
+
+        mItemsList
+                .stream()
+                .filter(playlistItem -> playlistItem.getSoundItem().equals(soundItem))
+                .findFirst()
+                .ifPresent(new Consumer<PlaylistItem>() {
+                    @Override
+                    public void accept(PlaylistItem playlistItem) {
+                        mActiveItem = playlistItem;
+                    }
+                });
     }
 
     public void reset() {
@@ -37,56 +51,57 @@ public class Playlist {
         mItemsList.clear();
     }
 
+    public List<SoundItem> getList() {
+        return mItemsList
+                .stream()
+                .map(chainItem -> ((PlaylistItem) chainItem).getSoundItem())
+                .collect(Collectors.toList());
+    }
+
     public List<SoundItem> getUnshiftedList() {
 
         int activeItemIndex = mItemsList.indexOf(mActiveItem);
 
-        /*if (activeItemIndex < 0) {
+        if (activeItemIndex < 0) {
             throw new IllegalStateException("Active item not found in list.");
         }
         if (0 == activeItemIndex) {
-            return mItemsList.stream().map(playlistItem -> new SoundItem(
-                    playlistItem.getTitle(),
-                    playlistItem.getFilePath()
-            )).collect(Collectors.toList());
+            return getList();
         }
         else {
-            return mItemsList.stream().skip(activeItemIndex-1).collect(Collectors.toList());
-        }*/
-
-        return null;
+            return mItemsList
+                    .stream()
+                    .skip(activeItemIndex-1)
+                    .map(chainItem -> ((PlaylistItem) chainItem).getSoundItem())
+                    .collect(Collectors.toList());
+        }
     }
 
     public boolean hasPrevItem() {
         return (null != mActiveItem && null != mActiveItem.getPrevItem());
     }
 
+    public boolean hasNextItem() {
+        return (null != mActiveItem && null != mActiveItem.getNextItem());
+    }
+
 
     private static class PlaylistItem extends ChainItem {
 
-        @Nullable private ChainItem mPrevItem;
-        @Nullable private ChainItem mNextItem;
+        @NonNull private final SoundItem mSoundItem;
 
-        public PlaylistItem(@NonNull ChainItem soundItem) {
-
+        public PlaylistItem(@NonNull SoundItem soundItem) {
+            mSoundItem = soundItem;
         }
 
-        public void setPrevItem(@Nullable ChainItem prevItem) {
-            mPrevItem = prevItem;
+        @NonNull @Override
+        public String getTitle() {
+            return mSoundItem.getTitle();
         }
 
-        public void setNextItem(@Nullable ChainItem nextItem) {
-            mNextItem = nextItem;
-        }
-
-        @Nullable
-        public ChainItem getPrevItem() {
-            return mPrevItem;
-        }
-
-        @Nullable
-        public ChainItem getNextItem() {
-            return mNextItem;
+        @NonNull
+        public SoundItem getSoundItem() {
+            return mSoundItem;
         }
     }
 }
