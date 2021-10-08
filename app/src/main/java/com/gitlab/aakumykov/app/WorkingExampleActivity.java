@@ -44,7 +44,8 @@ public class WorkingExampleActivity extends AppCompatActivity
             "Gazebo30.mp3",
             "Africa.mp3",
             "Rhythm.mp3",
-            "Кортнев.mp3"
+            "Кортнев.mp3",
+            "Конец Фильма - Огни.mp3"
 
 /*            "440hz.mp3",
             "500hz.mp3",
