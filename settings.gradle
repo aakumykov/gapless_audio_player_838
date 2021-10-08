@@ -1,3 +1,2 @@
 rootProject.name = "gapless_audio_player_838"
 include ':gapless_audio_player'
-include ':app'
