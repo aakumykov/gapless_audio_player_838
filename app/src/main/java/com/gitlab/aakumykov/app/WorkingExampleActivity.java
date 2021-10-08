@@ -19,7 +19,6 @@ import com.gitlab.aakumykov.gapless_audio_player.GaplessAudioPlayer;
 import com.gitlab.aakumykov.gapless_audio_player.Progress;
 import com.gitlab.aakumykov.gapless_audio_player.SoundItem;
 import com.gitlab.aakumykov.gapless_audio_player.iAudioPlayer;
-import com.gitlab.aakumykov.gapless_audio_player.iGaplessPlayerCallbacks;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,7 +29,7 @@ import permissions.dispatcher.RuntimePermissions;
 
 @RuntimePermissions
 public class WorkingExampleActivity extends AppCompatActivity
-        implements SeekBar.OnSeekBarChangeListener, iGaplessPlayerCallbacks
+        implements SeekBar.OnSeekBarChangeListener, iAudioPlayer.Callbacks
 {
     private static final String TAG = WorkingExampleActivity.class.getSimpleName();
     private static final String EMPTY_STRING = "";
@@ -163,7 +162,7 @@ public class WorkingExampleActivity extends AppCompatActivity
     }
 
 
-    // iGaplessPlayerCallbacks
+    // iAudioPlayer.Callbacks
     @Override
     public void onStarted(@NonNull SoundItem soundItem) {
         startProgressTracking();

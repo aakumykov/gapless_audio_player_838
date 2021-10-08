@@ -22,11 +22,11 @@ public class GaplessAudioPlayer implements iAudioPlayer {
     private final List<Player> mPlayersChain = new ArrayList<>();
     @Nullable private Player mCurrentPlayer;
     private final MediaPlayer.OnCompletionListener mCompletionListener;
-    private final iGaplessPlayerCallbacks mCallbacks;
+    private final Callbacks mCallbacks;
     private boolean mIsInitialized = false;
     private boolean mIsPlaying = false;
 
-    public GaplessAudioPlayer(@NonNull iGaplessPlayerCallbacks callbacks) {
+    public GaplessAudioPlayer(@NonNull Callbacks callbacks) {
 
         mCallbacks = callbacks;
 
