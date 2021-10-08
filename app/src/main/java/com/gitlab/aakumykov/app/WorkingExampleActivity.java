@@ -54,6 +54,7 @@ public class WorkingExampleActivity extends AppCompatActivity
     };
 
     private AudioManager mAudioManager;
+    private String mMusicDir;
 
 
     @Override
@@ -77,6 +78,8 @@ public class WorkingExampleActivity extends AppCompatActivity
         mAudioPlayer = new GaplessAudioPlayer(this);
 
         mAudioManager = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
+
+        prepareMusicDir();
     }
 
     @Override
@@ -102,17 +105,24 @@ public class WorkingExampleActivity extends AppCompatActivity
     @NeedsPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
     void playMusicList() {
 
-        String dirName = Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_DOWNLOADS).toString();
-
         List<SoundItem> soundItemList = Stream.of(mMusicList).map(fileName ->
                 new SoundItem(
                     fileName,
-                    dirName + "/" + fileName
+                    mMusicDir + "/" + fileName
                 )
         ).collect(Collectors.toList());
 
         mAudioPlayer.play(soundItemList);
+    }
+
+
+    private void prepareMusicDir() {
+        mMusicDir = Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_DOWNLOADS).toString();
+
+        mViewBinding.musicDirView.setText(
+                getString(R.string.music_dir, mMusicDir)
+        );
     }
 
 
