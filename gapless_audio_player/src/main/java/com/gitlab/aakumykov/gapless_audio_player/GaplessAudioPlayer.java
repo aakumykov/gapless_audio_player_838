@@ -17,15 +17,20 @@ public class GaplessAudioPlayer implements iAudioPlayer {
 
     private static final String TAG = GaplessAudioPlayer.class.getSimpleName();
     private static final int TRACK_BEGINNING_THRESHOLD_MS = 1000;
+
     private final Playlist mPlaylist = new Playlist();
+
+    private final MediaPlayer.OnCompletionListener mCompletionListener;
+    private final iAudioPlayer.Callbacks mCallbacks;
+
     private final List<Player> mPlayersChain = new ArrayList<>();
     @Nullable private Player mCurrentPlayer;
-    private final MediaPlayer.OnCompletionListener mCompletionListener;
-    private final Callbacks mCallbacks;
+
     private boolean mIsInitialized = false;
     private boolean mIsPlaying = false;
 
-    public GaplessAudioPlayer(@NonNull Callbacks callbacks) {
+
+    public GaplessAudioPlayer(@NonNull iAudioPlayer.Callbacks callbacks) {
 
         mCallbacks = callbacks;
 
