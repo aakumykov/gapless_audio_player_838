@@ -17,7 +17,6 @@ public class GaplessAudioPlayer implements iAudioPlayer {
 
     private static final String TAG = GaplessAudioPlayer.class.getSimpleName();
     private static final int TRACK_BEGINNING_THRESHOLD_MS = 1000;
-    private final Object SYNC_FLAG = new Object();
     private final Playlist mPlaylist = new Playlist();
     private final List<Player> mPlayersChain = new ArrayList<>();
     @Nullable private Player mCurrentPlayer;
