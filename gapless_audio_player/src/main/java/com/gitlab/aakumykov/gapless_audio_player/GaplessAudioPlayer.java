@@ -85,7 +85,7 @@ public class GaplessAudioPlayer implements iAudioPlayer {
     public synchronized void prev() {
         if (null != mCurrentPlayer)
         {
-            if (trackIsOnBeginning())
+            if (!isPlaying() || trackIsOnBeginning())
                 skipToPrevTrack();
             else
                 skipToTrackBeginning();
