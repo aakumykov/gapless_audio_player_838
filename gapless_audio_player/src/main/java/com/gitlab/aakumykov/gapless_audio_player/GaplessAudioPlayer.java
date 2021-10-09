@@ -72,7 +72,7 @@ public class GaplessAudioPlayer implements iAudioPlayer {
         if (null != mCurrentPlayer)
         {
             if (mPlaylist.hasNextItem()) {
-                release();
+                releaseCurrentPlayer();
                 shift();
                 start();
             }
@@ -150,11 +150,10 @@ public class GaplessAudioPlayer implements iAudioPlayer {
             }
     }
 
-    private synchronized void release() {
+    private synchronized void releaseCurrentPlayer() {
         if (null != mCurrentPlayer) {
             mCurrentPlayer.release();
             mIsPlaying = false;
-            mCallbacks.onStopped();
         }
     }
 
@@ -171,9 +170,9 @@ public class GaplessAudioPlayer implements iAudioPlayer {
 
     private synchronized void skipToPrevTrack() {
         if (mPlaylist.hasPrevItem()) {
-            release();
-            unshift();
-            start();
+            releaseCurrentPlayer();
+            List<SoundItem> unshiftedList = mPlaylist.getUnshiftedList();
+            playList(unshiftedList);
         }
         else {
             mCallbacks.onNoPrevTracks();
@@ -246,7 +245,7 @@ public class GaplessAudioPlayer implements iAudioPlayer {
         }
     }
 
-    private synchronized void unshift() {
+    private synchronized void unshiftAndStart() {
         if (null != mCurrentPlayer) {
             List<SoundItem> subList = mPlaylist.getUnshiftedList();
             playList(subList);
