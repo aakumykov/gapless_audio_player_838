@@ -176,7 +176,7 @@ public class WorkingExampleActivity extends AppCompatActivity
     // iAudioPlayer.Callbacks
     @Override
     public void onStarted(@NonNull SoundItem soundItem) {
-        startProgressTracking();
+//        startProgressTracking();
         showPauseButton();
         hideError();
         showTrackName(soundItem);
@@ -185,7 +185,6 @@ public class WorkingExampleActivity extends AppCompatActivity
 
     @Override
     public void onStopped() {
-        stopProgressTracking();
         showPlayButton();
         hideTrackName();
         disableSeekBar();
@@ -193,14 +192,18 @@ public class WorkingExampleActivity extends AppCompatActivity
 
     @Override
     public void onPaused() {
-        stopProgressTracking();
         showPlayButton();
     }
 
     @Override
     public void onResumed() {
-        startProgressTracking();
         showPauseButton();
+    }
+
+    @Override
+    public void onProgress(int position, int duration) {
+        mViewBinding.seekBar.setMax(duration);
+        mViewBinding.seekBar.setProgress(position);
     }
 
     @Override

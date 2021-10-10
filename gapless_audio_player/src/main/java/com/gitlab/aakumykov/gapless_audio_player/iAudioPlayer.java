@@ -30,6 +30,8 @@ public interface iAudioPlayer {
         void onPaused();
         void onResumed();
 
+        void onProgress(int position, int duration);
+
         void onNoNextTracks();
         void onNoPrevTracks();
 
