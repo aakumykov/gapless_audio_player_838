@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
-import com.gitlab.aakumykov.gapless_audio_player.classes.SampleItem;
+import com.gitlab.aakumykov.gapless_audio_player.stubs.SampleItem;
 
 import org.junit.Before;
 import org.junit.Test;
