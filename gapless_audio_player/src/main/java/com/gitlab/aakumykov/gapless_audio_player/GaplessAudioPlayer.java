@@ -228,7 +228,7 @@ public class GaplessAudioPlayer implements iAudioPlayer {
             }
         }
 
-        mPlaylist.markAsFilled();
+        mPlaylist.finishCreation();
 
         mIsInitialized = true;
 

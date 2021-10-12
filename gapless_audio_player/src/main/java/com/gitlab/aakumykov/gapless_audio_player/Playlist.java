@@ -24,7 +24,7 @@ public class Playlist {
             mItemsList.add(new PlaylistItem(soundItem));
     }
 
-    public void markAsFilled() {
+    public void finishCreation() {
         mIsFilled = true;
         ChainItem.mergeItemsIntoChain(mItemsList);
     }
