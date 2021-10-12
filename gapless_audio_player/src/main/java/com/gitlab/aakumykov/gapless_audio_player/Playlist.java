@@ -19,7 +19,7 @@ public class Playlist {
     }
 
 
-    public void addIfNotFilled(@NonNull SoundItem soundItem) {
+    public void addIfNotYetFinished(@NonNull SoundItem soundItem) {
         if (!mIsFilled)
             mItemsList.add(new PlaylistItem(soundItem));
     }

@@ -220,7 +220,7 @@ public class GaplessAudioPlayer implements iAudioPlayer {
                 player.prepare();
                 player.setOnCompletionListener(mCompletionListener);
                 mPlayersChain.add(player);
-                mPlaylist.addIfNotFilled(soundItem);
+                mPlaylist.addIfNotYetFinished(soundItem);
             }
             catch (IOException e) {
                 mCallbacks.onPreparingError(soundItem, ExceptionUtils.getErrorMessage(e));
