@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 public class Playlist {
 
     private final List<PlaylistItem> mItemsList = new ArrayList<>();
-    private boolean mIsFilled = false;
+    private boolean mIsFinished = false;
     private PlaylistItem mActiveItem;
 
 
@@ -20,12 +20,12 @@ public class Playlist {
 
 
     public void addIfNotYetFinished(@NonNull SoundItem soundItem) {
-        if (!mIsFilled)
+        if (!mIsFinished)
             mItemsList.add(new PlaylistItem(soundItem));
     }
 
     public void finishCreation() {
-        mIsFilled = true;
+        mIsFinished = true;
         ChainItem.mergeItemsIntoChain(mItemsList);
     }
 
@@ -46,7 +46,7 @@ public class Playlist {
     }
 
     public void reset() {
-        mIsFilled = false;
+        mIsFinished = false;
         mActiveItem = null;
         mItemsList.clear();
     }
