@@ -3,6 +3,8 @@ package com.gitlab.aakumykov.gapless_audio_player;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 
+import com.gitlab.aakumykov.gapless_audio_player.classes.SampleItem;
+
 import org.junit.Before;
 import org.junit.Test;
 

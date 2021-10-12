@@ -1,8 +1,10 @@
-package com.gitlab.aakumykov.gapless_audio_player;
+package com.gitlab.aakumykov.gapless_audio_player.classes;
 
 import androidx.annotation.NonNull;
 
-class SampleItem extends ChainItem {
+import com.gitlab.aakumykov.gapless_audio_player.ChainItem;
+
+public class SampleItem extends ChainItem {
 
     private final String mTitle;
 
