@@ -51,6 +51,7 @@ public class Playlist {
             throw new IllegalStateException("В списке найден элемент, который устанавливается активным");
     }
 
+    // TODO: убрать, это используется только в тесте
     @Nullable
     public SoundItem getActiveItem() {
         return (null != mActiveItem) ?
@@ -58,6 +59,7 @@ public class Playlist {
                 null;
     }
 
+    // TODO: убрать, это используется только в тесте
     public boolean isFinished() {
         return mIsFinished;
     }
