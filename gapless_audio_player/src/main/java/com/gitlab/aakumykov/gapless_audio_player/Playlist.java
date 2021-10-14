@@ -95,11 +95,17 @@ public class Playlist {
     }
 
     public boolean hasPrevItem() {
-        return (null != mActiveItem && null != mActiveItem.getPrevItem());
+        if (null == mActiveItem)
+            throw new IllegalStateException("Не установлен активный элемент плейлиста.");
+
+        return null != mActiveItem.getPrevItem();
     }
 
     public boolean hasNextItem() {
-        return (null != mActiveItem && null != mActiveItem.getNextItem());
+        if (null == mActiveItem)
+            throw new IllegalStateException("Не установлен активный элемент плейлиста.");
+
+        return null != mActiveItem.getNextItem();
     }
 
 
