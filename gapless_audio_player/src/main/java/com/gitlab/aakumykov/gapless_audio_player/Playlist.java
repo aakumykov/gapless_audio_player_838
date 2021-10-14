@@ -99,10 +99,6 @@ public class Playlist {
         return (null != mActiveItem && null != mActiveItem.getNextItem());
     }
 
-    public boolean hasItems() {
-        return mItemsList.size() > 0;
-    }
-
 
     private static class PlaylistItem extends ChainItem {
 
