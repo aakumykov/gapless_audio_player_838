@@ -1,6 +1,7 @@
 package com.gitlab.aakumykov.gapless_audio_player;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +12,7 @@ public class Playlist {
 
     private final List<PlaylistItem> mItemsList = new ArrayList<>();
     private boolean mIsFinished = false;
-    private PlaylistItem mActiveItem;
+    @Nullable private PlaylistItem mActiveItem;
 
 
     public Playlist() {
@@ -19,8 +20,10 @@ public class Playlist {
     }
 
 
-    public void addIfNotYetFinished(@NonNull SoundItem soundItem) {
-        if (!mIsFinished)
+    public void addIfNotYetFinished(@NonNull SoundItem soundItem) throws IllegalStateException {
+        if (mIsFinished)
+            throw new IllegalStateException("Плейлист уже закрыт для добавления элементов.");
+        else
             mItemsList.add(new PlaylistItem(soundItem));
     }
 
@@ -45,6 +48,17 @@ public class Playlist {
                 });
     }
 
+    @Nullable
+    public SoundItem getActiveItem() {
+        return (null != mActiveItem) ?
+                mActiveItem.getSoundItem() :
+                null;
+    }
+
+    public boolean isFinished() {
+        return mIsFinished;
+    }
+
     public void reset() {
         mIsFinished = false;
         mActiveItem = null;
@@ -54,7 +68,7 @@ public class Playlist {
     public List<SoundItem> getList() {
         return mItemsList
                 .stream()
-                .map(chainItem -> ((PlaylistItem) chainItem).getSoundItem())
+                .map(chainItem -> chainItem.getSoundItem())
                 .collect(Collectors.toList());
     }
 
@@ -71,8 +85,8 @@ public class Playlist {
         else {
             return mItemsList
                     .stream()
-                    .skip(activeItemIndex-1)
-                    .map(chainItem -> ((PlaylistItem) chainItem).getSoundItem())
+                    .skip(activeItemIndex)
+                    .map(chainItem -> chainItem.getSoundItem())
                     .collect(Collectors.toList());
         }
     }
