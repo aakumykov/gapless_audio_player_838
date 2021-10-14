@@ -88,7 +88,7 @@ public class Playlist {
         else {
             return mItemsList
                     .stream()
-                    .skip(activeItemIndex)
+                    .skip(activeItemIndex-1)
                     .map(PlaylistItem::getSoundItem)
                     .collect(Collectors.toList());
         }
