@@ -46,6 +46,9 @@ public class Playlist {
                         mActiveItem = playlistItem;
                     }
                 });
+
+        if (null == mActiveItem)
+            throw new IllegalStateException("В списке найден элемент, который устанавливается активным");
     }
 
     @Nullable
