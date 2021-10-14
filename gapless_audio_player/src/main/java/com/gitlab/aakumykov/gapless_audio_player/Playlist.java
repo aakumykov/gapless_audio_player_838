@@ -71,7 +71,7 @@ public class Playlist {
     public List<SoundItem> getList() {
         return mItemsList
                 .stream()
-                .map(chainItem -> chainItem.getSoundItem())
+                .map(PlaylistItem::getSoundItem)
                 .collect(Collectors.toList());
     }
 
@@ -89,7 +89,7 @@ public class Playlist {
             return mItemsList
                     .stream()
                     .skip(activeItemIndex)
-                    .map(chainItem -> chainItem.getSoundItem())
+                    .map(PlaylistItem::getSoundItem)
                     .collect(Collectors.toList());
         }
     }
