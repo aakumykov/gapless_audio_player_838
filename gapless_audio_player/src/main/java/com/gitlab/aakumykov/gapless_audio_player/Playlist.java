@@ -1,6 +1,7 @@
 package com.gitlab.aakumykov.gapless_audio_player;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,8 +11,8 @@ import java.util.stream.Collectors;
 public class Playlist {
 
     private final List<PlaylistItem> mItemsList = new ArrayList<>();
-    private boolean mIsFilled = false;
-    private PlaylistItem mActiveItem;
+    private boolean mIsFinished = false;
+    @Nullable private PlaylistItem mActiveItem;
 
 
     public Playlist() {
@@ -19,13 +20,15 @@ public class Playlist {
     }
 
 
-    public void addIfNotFilled(@NonNull SoundItem soundItem) {
-        if (!mIsFilled)
+    public void addIfNotYetFinished(@NonNull SoundItem soundItem) throws IllegalStateException {
+        if (mIsFinished)
+            throw new IllegalStateException("Плейлист уже закрыт для добавления элементов.");
+        else
             mItemsList.add(new PlaylistItem(soundItem));
     }
 
-    public void markAsFilled() {
-        mIsFilled = true;
+    public void finishCreation() {
+        mIsFinished = true;
         ChainItem.mergeItemsIntoChain(mItemsList);
     }
 
@@ -43,10 +46,26 @@ public class Playlist {
                         mActiveItem = playlistItem;
                     }
                 });
+
+        if (null == mActiveItem)
+            throw new IllegalStateException("В списке найден элемент, который устанавливается активным");
+    }
+
+    // TODO: убрать, это используется только в тесте
+    @Nullable
+    public SoundItem getActiveItem() {
+        return (null != mActiveItem) ?
+                mActiveItem.getSoundItem() :
+                null;
+    }
+
+    // TODO: убрать, это используется только в тесте
+    public boolean isFinished() {
+        return mIsFinished;
     }
 
     public void reset() {
-        mIsFilled = false;
+        mIsFinished = false;
         mActiveItem = null;
         mItemsList.clear();
     }
@@ -54,7 +73,7 @@ public class Playlist {
     public List<SoundItem> getList() {
         return mItemsList
                 .stream()
-                .map(chainItem -> ((PlaylistItem) chainItem).getSoundItem())
+                .map(PlaylistItem::getSoundItem)
                 .collect(Collectors.toList());
     }
 
@@ -72,17 +91,23 @@ public class Playlist {
             return mItemsList
                     .stream()
                     .skip(activeItemIndex-1)
-                    .map(chainItem -> ((PlaylistItem) chainItem).getSoundItem())
+                    .map(PlaylistItem::getSoundItem)
                     .collect(Collectors.toList());
         }
     }
 
     public boolean hasPrevItem() {
-        return (null != mActiveItem && null != mActiveItem.getPrevItem());
+        if (null == mActiveItem)
+            throw new IllegalStateException("Не установлен активный элемент плейлиста.");
+
+        return null != mActiveItem.getPrevItem();
     }
 
     public boolean hasNextItem() {
-        return (null != mActiveItem && null != mActiveItem.getNextItem());
+        if (null == mActiveItem)
+            throw new IllegalStateException("Не установлен активный элемент плейлиста.");
+
+        return null != mActiveItem.getNextItem();
     }
 
 
