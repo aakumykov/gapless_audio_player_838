@@ -122,7 +122,7 @@ public class GaplessAudioPlayer implements iAudioPlayer {
 
     @Override @Nullable
     public synchronized Progress getProgress() {
-        return (null != mCurrentPlayer && !mCurrentPlayer.isStopped()) ?
+        return (null != mCurrentPlayer && mCurrentPlayer.isNotStopped()) ?
                 new Progress(mCurrentPlayer.getCurrentPosition(), mCurrentPlayer.getDuration()) :
                 null;
     }
