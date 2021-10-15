@@ -27,7 +27,7 @@ public class Player extends MediaPlayer {
 
     @Override
     public void stop() throws IllegalStateException {
-        if (!isStopped()) {
+        if (isNotStopped()) {
             super.stop();
             mPlayerState = ePlayerState.STOPPED;
         }
@@ -50,8 +50,8 @@ public class Player extends MediaPlayer {
         return ePlayerState.PAUSED.equals(mPlayerState);
     }
 
-    public boolean isStopped() {
-        return ePlayerState.STOPPED.equals(mPlayerState);
+    public boolean isNotStopped() {
+        return ! ePlayerState.STOPPED.equals(mPlayerState);
     }
 
 
