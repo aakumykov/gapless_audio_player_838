@@ -25,6 +25,7 @@ public class Player extends MediaPlayer {
         }
     }
 
+    //TODO: а release() ?
     @Override
     public void stop() throws IllegalStateException {
         if (isNotStopped()) {
@@ -55,6 +56,7 @@ public class Player extends MediaPlayer {
     }
 
 
+    // TODO: добавить в интерфейс или прикрутить абстрактный класс ChainItem
     public void setNextPlayer(@Nullable Player player) {
         mNextPlayer = player;
     }
