@@ -62,7 +62,7 @@ public class PlayerTest {
         mPlayer1.pause();
 
         assertFalse(mPlayer1.isPlaying());
-        assertFalse(mPlayer1.isNotStopped());
+        assertTrue(mPlayer1.isNotStopped());
         assertTrue(mPlayer1.isPaused());
     }
 
@@ -137,4 +137,6 @@ public class PlayerTest {
     public void testToString() {
         MatcherAssert.assertThat(mPlayer1.toString(), instanceOf(String.class));
     }
+
+
 }
