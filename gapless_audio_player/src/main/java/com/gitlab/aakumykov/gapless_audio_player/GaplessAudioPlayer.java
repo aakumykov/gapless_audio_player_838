@@ -122,7 +122,7 @@ public class GaplessAudioPlayer implements iAudioPlayer {
 
     @Override @Nullable
     public synchronized Progress getProgress() {
-        return (null != mCurrentPlayer && !mCurrentPlayer.isStopped()) ?
+        return (null != mCurrentPlayer && mCurrentPlayer.isNotStopped()) ?
                 new Progress(mCurrentPlayer.getCurrentPosition(), mCurrentPlayer.getDuration()) :
                 null;
     }
@@ -220,7 +220,7 @@ public class GaplessAudioPlayer implements iAudioPlayer {
                 player.prepare();
                 player.setOnCompletionListener(mCompletionListener);
                 mPlayersChain.add(player);
-                mPlaylist.addIfNotFilled(soundItem);
+                mPlaylist.addIfNotYetFinished(soundItem);
             }
             catch (IOException e) {
                 mCallbacks.onPreparingError(soundItem, ExceptionUtils.getErrorMessage(e));
@@ -228,7 +228,7 @@ public class GaplessAudioPlayer implements iAudioPlayer {
             }
         }
 
-        mPlaylist.markAsFilled();
+        mPlaylist.finishCreation();
 
         mIsInitialized = true;
 

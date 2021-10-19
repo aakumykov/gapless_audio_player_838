@@ -5,6 +5,15 @@ import android.media.MediaPlayer;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+/**
+ * Встроенный в Android класс MediaPlayer позволяет бесшовно воспроизводить
+ * несколько медиа-файлов, устанавливая следующий плеер вызовом setNextMediaPlayer().
+ * Класс Player добавляет к базовому классу информацию о:
+ * 1) воспроизводимом треке;
+ * 2) предыдущем/следующем плеере в цепочке;
+ * 3) состоянии воспроизведения (игра,пауза,останов),
+ * позволяя получать эти данные непосредственно "из плеера", а не хранить их где-то ещё.
+ */
 public class Player extends MediaPlayer {
 
     @NonNull private final SoundItem mSoundItem;
@@ -17,6 +26,7 @@ public class Player extends MediaPlayer {
         mSoundItem = soundItem;
     }
 
+
     @Override
     public void start() throws IllegalStateException {
         if (!isPlaying()) {
@@ -25,19 +35,20 @@ public class Player extends MediaPlayer {
         }
     }
 
-    @Override
-    public void stop() throws IllegalStateException {
-        if (!isStopped()) {
-            super.stop();
-            mPlayerState = ePlayerState.STOPPED;
-        }
-    }
-
+    //TODO: а release() ?
     @Override
     public void pause() throws IllegalStateException {
         if (!isPaused()) {
             super.pause();
             mPlayerState = ePlayerState.PAUSED;
+        }
+    }
+
+    @Override
+    public void stop() throws IllegalStateException {
+        if (isNotStopped()) {
+            super.stop();
+            mPlayerState = ePlayerState.STOPPED;
         }
     }
 
@@ -50,11 +61,12 @@ public class Player extends MediaPlayer {
         return ePlayerState.PAUSED.equals(mPlayerState);
     }
 
-    public boolean isStopped() {
-        return ePlayerState.STOPPED.equals(mPlayerState);
+    public boolean isNotStopped() {
+        return ! ePlayerState.STOPPED.equals(mPlayerState);
     }
 
 
+    // TODO: добавить в интерфейс или прикрутить абстрактный класс ChainItem
     public void setNextPlayer(@Nullable Player player) {
         mNextPlayer = player;
     }
