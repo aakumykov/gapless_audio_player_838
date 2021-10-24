@@ -212,6 +212,7 @@ public class GaplessAudioPlayer implements iAudioPlayer {
     private void createPlayersAndFillPlaylist(@NonNull List<SoundItem> soundItemsList) {
 
         mPlayersChain.clear();
+        mPlaylist.reset();
 
         for (SoundItem soundItem : soundItemsList) {
             try {
