@@ -20,6 +20,7 @@ public class GaplessAudioPlayer implements iAudioPlayer {
     private static final String TAG = GaplessAudioPlayer.class.getSimpleName();
     private static final int TRACK_BEGINNING_THRESHOLD_MS = 1000;
     private static final long PROGRESS_UPDATE_PERIOD_MS = 100;
+    private static final String PROGRESS_TAG = "PROGRESS";
 
     private final Playlist mPlaylist = new Playlist();
 
@@ -120,6 +121,7 @@ public class GaplessAudioPlayer implements iAudioPlayer {
                 null;
     }
 
+    // TODO: убрать, чтобы избежать двойного отслеживания...
     @Override @Nullable
     public synchronized Progress getProgress() {
         return (null != mCurrentPlayer && mCurrentPlayer.isNotStopped()) ?
@@ -331,6 +333,8 @@ public class GaplessAudioPlayer implements iAudioPlayer {
     // Методы отслеживания прогресса
     private void startProgressTracking() {
 
+        Log.d(PROGRESS_TAG, "startProgressTracking()");
+
         TimerTask timerTask = new TimerTask() {
             @Override
             public void run() {
@@ -347,11 +351,19 @@ public class GaplessAudioPlayer implements iAudioPlayer {
         if (isPlaying() && null != mCurrentPlayer) {
             int position = mCurrentPlayer.getCurrentPosition();
             int duration = mCurrentPlayer.getDuration();
+
+            Log.d(PROGRESS_TAG, "trackProgress(), "+position);
+
             mCallbacks.onProgress(position, duration);
+        }
+        else {
+            Log.d(PROGRESS_TAG, "Что-то не то...");
         }
     }
 
     private void stopProgressTracking() {
+        Log.d(PROGRESS_TAG, "stopProgressTracking()");
+
         if (null != mTimer)
             mTimer.cancel();
     }
@@ -367,10 +379,13 @@ public class GaplessAudioPlayer implements iAudioPlayer {
         if (null == nextPlayer)
             stop();
         else {
+            stopProgressTracking();
+
             mCurrentPlayer = nextPlayer;
             mPlaylist.setActiveItem(mCurrentPlayer.getSoundItem());
             mCallbacks.onStarted(mCurrentPlayer.getSoundItem());
-            stopProgressTracking();
+
+            startProgressTracking();
         }
     }
 
@@ -379,6 +394,11 @@ public class GaplessAudioPlayer implements iAudioPlayer {
     private void debugLog(String text) {
         if (BuildConfig.DEBUG)
             Log.d(TAG, text);
+    }
+
+    private void debugLog(@NonNull String tag, String text) {
+        if (BuildConfig.DEBUG)
+            Log.d(tag, text);
     }
 
     private void debugLog(Throwable t) {
