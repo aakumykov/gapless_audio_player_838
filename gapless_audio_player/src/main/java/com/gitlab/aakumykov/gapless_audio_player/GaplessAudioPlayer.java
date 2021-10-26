@@ -212,7 +212,6 @@ public class GaplessAudioPlayer implements iAudioPlayer {
     private void createPlayersAndFillPlaylist(@NonNull List<SoundItem> soundItemsList) {
 
         mPlayersChain.clear();
-        mPlaylist.reset();
 
         for (SoundItem soundItem : soundItemsList) {
             try {
@@ -220,8 +219,15 @@ public class GaplessAudioPlayer implements iAudioPlayer {
                 player.setDataSource(soundItem.getFilePath());
                 player.prepare();
                 player.setOnCompletionListener(mCompletionListener);
+
                 mPlayersChain.add(player);
-                mPlaylist.addIfNotYetFinished(soundItem);
+
+                /* Первичное заполнение плейлиста идёт параллельно
+                   с созданием плееров для списка треков, которые сейчас
+                   будут проигрываться. Поэтому учитывается флаг.
+                 */
+                if (mPlaylist.isFirstFill())
+                    mPlaylist.addIfFirstFill(soundItem);
             }
             catch (IOException e) {
                 mCallbacks.onPreparingError(soundItem, ExceptionUtils.getErrorMessage(e));

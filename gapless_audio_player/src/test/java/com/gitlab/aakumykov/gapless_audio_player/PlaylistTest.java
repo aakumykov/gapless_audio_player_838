@@ -34,7 +34,7 @@ public class PlaylistTest {
 
     @Test
     public void add_IfNotFinished() {
-        mPlaylist.addIfNotYetFinished(mSoundItem1);
+        mPlaylist.addIfFirstFill(mSoundItem1);
 
         assertTrue(mPlaylist.getList().contains(mSoundItem1));
         assertEquals(1, mPlaylist.getList().size());
@@ -44,7 +44,7 @@ public class PlaylistTest {
     public void notAdd_IfFinished() {
         mPlaylist.finishCreation();
 
-        assertThrows(IllegalStateException.class, () -> mPlaylist.addIfNotYetFinished(mSoundItem1));
+        assertThrows(IllegalStateException.class, () -> mPlaylist.addIfFirstFill(mSoundItem1));
         assertEquals(0, mPlaylist.getList().size());
     }
 
@@ -52,15 +52,15 @@ public class PlaylistTest {
     public void finishCreation() {
         mPlaylist.finishCreation();
 
-        assertTrue(mPlaylist.isFinished());
-        assertThrows(IllegalStateException.class, () -> mPlaylist.addIfNotYetFinished(mSoundItem1));
+        assertFalse(mPlaylist.isFirstFill());
+        assertThrows(IllegalStateException.class, () -> mPlaylist.addIfFirstFill(mSoundItem1));
     }
 
     @Test
     public void setActiveItem() {
-        mPlaylist.addIfNotYetFinished(mSoundItem1);
-        mPlaylist.addIfNotYetFinished(mSoundItem2);
-        mPlaylist.addIfNotYetFinished(mSoundItem3);
+        mPlaylist.addIfFirstFill(mSoundItem1);
+        mPlaylist.addIfFirstFill(mSoundItem2);
+        mPlaylist.addIfFirstFill(mSoundItem3);
 
         mPlaylist.setActiveItem(mSoundItem2);
 
@@ -69,7 +69,7 @@ public class PlaylistTest {
 
     @Test
     public void getActiveItem() {
-        mPlaylist.addIfNotYetFinished(mSoundItem1);
+        mPlaylist.addIfFirstFill(mSoundItem1);
         mPlaylist.setActiveItem(mSoundItem1);
 
         assertSame(mSoundItem1, mPlaylist.getActiveItem());
@@ -79,7 +79,7 @@ public class PlaylistTest {
     public void reset() {
         mPlaylist.reset();
 
-        assertFalse(mPlaylist.isFinished());
+        assertTrue(mPlaylist.isFirstFill());
         assertNull(mPlaylist.getActiveItem());
         assertEquals(0, mPlaylist.getList().size());
     }
@@ -91,15 +91,15 @@ public class PlaylistTest {
 
     @Test
     public void throwsExceptionIfActiveItemHasNotBeenNotSet_v2() {
-        mPlaylist.addIfNotYetFinished(mSoundItem1);
-        mPlaylist.addIfNotYetFinished(mSoundItem2);
+        mPlaylist.addIfFirstFill(mSoundItem1);
+        mPlaylist.addIfFirstFill(mSoundItem2);
 
         assertThrows(IllegalStateException.class, () -> mPlaylist.hasPrevItem());
     }
 
     @Test
     public void throwsExceptionIfActiveItemNotFound() {
-        mPlaylist.addIfNotYetFinished(mSoundItem1);
+        mPlaylist.addIfFirstFill(mSoundItem1);
         assertThrows(IllegalStateException.class, () -> mPlaylist.setActiveItem(mSoundItem2));
     }
 
@@ -148,24 +148,24 @@ public class PlaylistTest {
 
     @Test
     public void getListBeforeFinishing() {
-        mPlaylist.addIfNotYetFinished(mSoundItem1);
+        mPlaylist.addIfFirstFill(mSoundItem1);
         assertTrue(mPlaylist.getList().contains(mSoundItem1));
         assertEquals(1, mPlaylist.getList().size());
 
-        mPlaylist.addIfNotYetFinished(mSoundItem2);
+        mPlaylist.addIfFirstFill(mSoundItem2);
         assertTrue(mPlaylist.getList().contains(mSoundItem2));
         assertEquals(2, mPlaylist.getList().size());
 
-        mPlaylist.addIfNotYetFinished(mSoundItem3);
+        mPlaylist.addIfFirstFill(mSoundItem3);
         assertTrue(mPlaylist.getList().contains(mSoundItem3));
         assertEquals(3, mPlaylist.getList().size());
     }
 
     @Test
     public void getListAfterFinishing() {
-        mPlaylist.addIfNotYetFinished(mSoundItem1);
-        mPlaylist.addIfNotYetFinished(mSoundItem2);
-        mPlaylist.addIfNotYetFinished(mSoundItem3);
+        mPlaylist.addIfFirstFill(mSoundItem1);
+        mPlaylist.addIfFirstFill(mSoundItem2);
+        mPlaylist.addIfFirstFill(mSoundItem3);
         mPlaylist.finishCreation();
 
         assertEquals(3, mPlaylist.getList().size());
@@ -206,22 +206,22 @@ public class PlaylistTest {
 
 
     private void prepareListWithOneItem() {
-        mPlaylist.addIfNotYetFinished(mSoundItem1);
+        mPlaylist.addIfFirstFill(mSoundItem1);
         mPlaylist.finishCreation();
     }
 
     private void preparePlaylistWithTwoItems() {
         mPlaylist.reset();
-        mPlaylist.addIfNotYetFinished(mSoundItem1);
-        mPlaylist.addIfNotYetFinished(mSoundItem2);
+        mPlaylist.addIfFirstFill(mSoundItem1);
+        mPlaylist.addIfFirstFill(mSoundItem2);
         mPlaylist.finishCreation();
     }
 
     private void prepareListWithThreeItems() {
         mPlaylist.reset();
-        mPlaylist.addIfNotYetFinished(mSoundItem1);
-        mPlaylist.addIfNotYetFinished(mSoundItem2);
-        mPlaylist.addIfNotYetFinished(mSoundItem3);
+        mPlaylist.addIfFirstFill(mSoundItem1);
+        mPlaylist.addIfFirstFill(mSoundItem2);
+        mPlaylist.addIfFirstFill(mSoundItem3);
         mPlaylist.finishCreation();
     }
 }
