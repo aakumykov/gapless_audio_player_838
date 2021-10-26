@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
+import java.util.TimerTask;
 
 public class GaplessAudioPlayer implements iAudioPlayer {
 
@@ -332,7 +333,7 @@ public class GaplessAudioPlayer implements iAudioPlayer {
     // Методы отслеживания прогресса
     private void startProgressTracking() {
 
-        /*Log.d(PROGRESS_TAG, "startProgressTracking()");
+        Log.d(PROGRESS_TAG, "startProgressTracking()");
 
         TimerTask timerTask = new TimerTask() {
             @Override
@@ -344,10 +345,10 @@ public class GaplessAudioPlayer implements iAudioPlayer {
         mTimer = new Timer();
 
         mTimer.scheduleAtFixedRate(timerTask, 0, PROGRESS_UPDATE_PERIOD_MS);
-    */}
+    }
 
     private synchronized void trackProgress() {
-        /*if (isPlaying() && null != mCurrentPlayer) {
+        if (isPlaying() && null != mCurrentPlayer) {
             int position = mCurrentPlayer.getCurrentPosition();
             int duration = mCurrentPlayer.getDuration();
 
@@ -357,14 +358,14 @@ public class GaplessAudioPlayer implements iAudioPlayer {
         }
         else {
             Log.d(PROGRESS_TAG, "Что-то не то...");
-        }*/
+        }
     }
 
     private void stopProgressTracking() {
-        /*Log.d(PROGRESS_TAG, "stopProgressTracking()");
+        Log.d(PROGRESS_TAG, "stopProgressTracking()");
 
         if (null != mTimer)
-            mTimer.cancel();*/
+            mTimer.cancel();
     }
 
 

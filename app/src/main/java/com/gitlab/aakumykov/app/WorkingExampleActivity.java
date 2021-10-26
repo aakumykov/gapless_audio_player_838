@@ -5,6 +5,7 @@ import android.content.Context;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.Log;
 import android.view.View;
 import android.widget.SeekBar;
 import android.widget.Toast;
@@ -33,7 +34,6 @@ public class WorkingExampleActivity extends AppCompatActivity
 {
     private static final String TAG = WorkingExampleActivity.class.getSimpleName();
     private static final String EMPTY_STRING = "";
-    private static final long PROGRESS_TRACKING_PERIOD_MS = 100;
     private ActivityWorkingExampleBinding mViewBinding;
     private iAudioPlayer mAudioPlayer;
     private boolean mProgressTrackingEnabled = false;
@@ -191,7 +191,7 @@ public class WorkingExampleActivity extends AppCompatActivity
     // iAudioPlayer.Callbacks
     @Override
     public void onStarted(@NonNull SoundItem soundItem) {
-        startProgressTracking();
+//        startProgressTracking();
         showPauseButton();
         hideError();
         showTrackName(soundItem);
@@ -200,7 +200,6 @@ public class WorkingExampleActivity extends AppCompatActivity
 
     @Override
     public void onStopped() {
-        stopProgressTracking();
         showPlayButton();
         hideTrackName();
         disableSeekBar();
@@ -218,9 +217,9 @@ public class WorkingExampleActivity extends AppCompatActivity
 
     @Override
     public void onProgress(int position, int duration) {
-//        Log.d("PROGRESS", String.valueOf(position));
-//        mViewBinding.seekBar.setMax(duration);
-//        mViewBinding.seekBar.setProgress(position);
+        Log.d("PROGRESS", String.valueOf(position));
+        mViewBinding.seekBar.setMax(duration);
+        mViewBinding.seekBar.setProgress(position);
     }
 
     @Override
@@ -300,10 +299,7 @@ public class WorkingExampleActivity extends AppCompatActivity
         }
 
         if (mProgressTrackingEnabled)
-            getWindow().getDecorView().postDelayed(
-                    this::trackProgress,
-                    PROGRESS_TRACKING_PERIOD_MS
-            );
+            getWindow().getDecorView().postDelayed(this::trackProgress, 100);
     }
 
 
