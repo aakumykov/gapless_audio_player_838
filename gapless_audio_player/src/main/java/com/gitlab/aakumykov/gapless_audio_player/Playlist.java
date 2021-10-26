@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 public class Playlist {
 
     private final List<PlaylistItem> mItemsList = new ArrayList<>();
-    private boolean mIsFinished = false;
+    private boolean mIsFirstFill = true;
     @Nullable private PlaylistItem mActiveItem;
 
 
@@ -20,15 +20,15 @@ public class Playlist {
     }
 
 
-    public void addIfNotYetFinished(@NonNull SoundItem soundItem) throws IllegalStateException {
-        if (mIsFinished)
-            throw new IllegalStateException("Плейлист уже закрыт для добавления элементов.");
-        else
+    public void addIfFirstFill(@NonNull SoundItem soundItem) throws IllegalStateException {
+        if (mIsFirstFill)
             mItemsList.add(new PlaylistItem(soundItem));
+        else
+            throw new IllegalStateException("Плейлист уже закрыт для добавления элементов.");
     }
 
     public void finishCreation() {
-        mIsFinished = true;
+        mIsFirstFill = false;
         ChainItem.mergeItemsIntoChain(mItemsList);
     }
 
@@ -60,12 +60,12 @@ public class Playlist {
     }
 
     // TODO: убрать, это используется только в тесте
-    public boolean isFinished() {
-        return mIsFinished;
+    public boolean isFirstFill() {
+        return mIsFirstFill;
     }
 
     public void reset() {
-        mIsFinished = false;
+        mIsFirstFill = true;
         mActiveItem = null;
         mItemsList.clear();
     }
