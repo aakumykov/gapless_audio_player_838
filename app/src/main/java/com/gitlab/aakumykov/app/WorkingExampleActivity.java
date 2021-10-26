@@ -20,9 +20,9 @@ import com.gitlab.aakumykov.gapless_audio_player.Progress;
 import com.gitlab.aakumykov.gapless_audio_player.SoundItem;
 import com.gitlab.aakumykov.gapless_audio_player.iAudioPlayer;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.RuntimePermissions;
@@ -106,12 +106,24 @@ public class WorkingExampleActivity extends AppCompatActivity
     @NeedsPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
     void playMusicList() {
 
-        List<SoundItem> soundItemList = Stream.of(mMusicList).map(fileName ->
-                new SoundItem(
-                    fileName,
-                    mMusicDir + "/" + fileName
-                )
-        ).collect(Collectors.toList());
+        String dirName = Environment
+                .getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                .getAbsolutePath();
+
+        @Nullable
+        File[] mp3files = new File(dirName).listFiles(file -> {
+            String fileName = file.getName();
+            return fileName.matches("^.+\\.mp3$");
+        });
+
+        List<SoundItem> soundItemList = new ArrayList<>();
+
+        if (null != mp3files) {
+            for (File soundFile : mp3files) {
+                String fileName = soundFile.getName();
+                soundItemList.add(new SoundItem(fileName, dirName + "/" + fileName));
+            }
+        }
 
         mAudioPlayer.play(soundItemList);
     }
