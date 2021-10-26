@@ -5,6 +5,7 @@ import android.content.Context;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.Log;
 import android.view.View;
 import android.widget.SeekBar;
 import android.widget.Toast;
@@ -125,6 +126,8 @@ public class WorkingExampleActivity extends AppCompatActivity
             }
         }
 
+        showToast( "файлов: " + soundItemList.size());
+
         mAudioPlayer.play(soundItemList);
     }
 
@@ -214,6 +217,7 @@ public class WorkingExampleActivity extends AppCompatActivity
 
     @Override
     public void onProgress(int position, int duration) {
+        Log.d("PROGRESS", String.valueOf(position));
         mViewBinding.seekBar.setMax(duration);
         mViewBinding.seekBar.setProgress(position);
     }
