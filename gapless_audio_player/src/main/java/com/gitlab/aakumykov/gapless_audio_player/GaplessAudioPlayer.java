@@ -31,6 +31,7 @@ public class GaplessAudioPlayer implements iAudioPlayer {
     private boolean mIsInitialized = false;
     private boolean mIsPlaying = false;
     private Timer mTimer;
+    private TimerTask mTimerTask;
 
 
     public GaplessAudioPlayer(@NonNull iAudioPlayer.Callbacks callbacks) {
@@ -331,7 +332,7 @@ public class GaplessAudioPlayer implements iAudioPlayer {
     // Методы отслеживания прогресса
     private void startProgressTracking() {
 
-        TimerTask timerTask = new TimerTask() {
+        mTimerTask = new TimerTask() {
             @Override
             public void run() {
                 trackProgress();
@@ -340,13 +341,13 @@ public class GaplessAudioPlayer implements iAudioPlayer {
 
         mTimer = new Timer();
 
-        mTimer.scheduleAtFixedRate(timerTask, 0, PROGRESS_UPDATE_PERIOD_MS);
+        mTimer.scheduleAtFixedRate(mTimerTask, 0, PROGRESS_UPDATE_PERIOD_MS);
     }
 
     private synchronized void trackProgress() {
 
         if (!isPlaying()) {
-            Log.w(TAG, "Воспроизведение остановлено");
+            Log.w(TAG, "Плеер не играет.");
             return;
         }
 
@@ -362,8 +363,8 @@ public class GaplessAudioPlayer implements iAudioPlayer {
     }
 
     private void stopProgressTracking() {
-        if (null != mTimer)
-            mTimer.cancel();
+        if (null != mTimerTask)
+            mTimerTask.cancel();
     }
 
 
