@@ -85,12 +85,6 @@ public class WorkingExampleActivity extends AppCompatActivity
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        WorkingExampleActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
-    }
-
-    @Override
     protected void onPause() {
         super.onPause();
         mAudioPlayer.pause(false);
@@ -104,43 +98,6 @@ public class WorkingExampleActivity extends AppCompatActivity
     }
 
 
-    @NeedsPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
-    void playMusicList() {
-
-        String dirName = Environment
-                .getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-                .getAbsolutePath();
-
-        @Nullable
-        File[] mp3files = new File(dirName).listFiles(file -> {
-            String fileName = file.getName();
-            return fileName.matches("^.+\\.mp3$");
-        });
-
-        List<SoundItem> soundItemList = new ArrayList<>();
-
-        if (null != mp3files) {
-            for (File soundFile : mp3files) {
-                String fileName = soundFile.getName();
-                soundItemList.add(new SoundItem(fileName, dirName + "/" + fileName));
-            }
-        }
-
-        showToast( "файлов: " + soundItemList.size());
-
-        mAudioPlayer.play(soundItemList);
-    }
-
-
-    private void prepareMusicDir() {
-        mMusicDir = Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_DOWNLOADS).toString();
-
-        mViewBinding.musicDirView.setText(
-                getString(R.string.music_dir, mMusicDir)
-        );
-    }
-
 
     private void onPlayButtonClicked(View view) {
 
@@ -151,6 +108,7 @@ public class WorkingExampleActivity extends AppCompatActivity
                 mAudioPlayer.resume();
         }
         else {
+//            playMusicList();
             WorkingExampleActivityPermissionsDispatcher.playMusicListWithPermissionCheck(this);
         }
     }
@@ -178,14 +136,40 @@ public class WorkingExampleActivity extends AppCompatActivity
         showMusicVolumeLevel();
     }
 
-    private void showMusicVolumeLevel() {
-        mViewBinding.soundVolumeView.setText(String.valueOf(mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC)));
-        mViewBinding.soundVolumeView.postDelayed(this::hideMusicVolumeLevel, 1000);
+
+    // Запрос разрешений
+    // TODO: реагировать на отказ
+    @NeedsPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+    void playMusicList() {
+
+        String dirName = Environment
+                .getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                .getAbsolutePath();
+
+        @Nullable
+        File[] mp3files = new File(dirName).listFiles(file -> {
+            String fileName = file.getName();
+            return fileName.matches("^.+\\.mp3$");
+        });
+
+        List<SoundItem> soundItemList = new ArrayList<>();
+
+        if (null != mp3files) {
+            for (File soundFile : mp3files) {
+                String fileName = soundFile.getName();
+                soundItemList.add(new SoundItem(fileName, dirName + "/" + fileName));
+            }
+        }
+
+        mAudioPlayer.play(soundItemList);
     }
 
-    private void hideMusicVolumeLevel() {
-        mViewBinding.soundVolumeView.setText(EMPTY_STRING);
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        WorkingExampleActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
     }
+
 
 
     // iAudioPlayer.Callbacks
@@ -277,6 +261,28 @@ public class WorkingExampleActivity extends AppCompatActivity
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
 
+    }
+
+
+
+    // Разные внутренние методы
+    private void prepareMusicDir() {
+        mMusicDir = Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_DOWNLOADS).toString();
+
+        mViewBinding.musicDirView.setText(
+                getString(R.string.music_dir, mMusicDir)
+        );
+    }
+
+
+    private void showMusicVolumeLevel() {
+        mViewBinding.soundVolumeView.setText(String.valueOf(mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC)));
+        mViewBinding.soundVolumeView.postDelayed(this::hideMusicVolumeLevel, 1000);
+    }
+
+    private void hideMusicVolumeLevel() {
+        mViewBinding.soundVolumeView.setText(EMPTY_STRING);
     }
 
 
