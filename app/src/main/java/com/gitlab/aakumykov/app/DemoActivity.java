@@ -30,10 +30,10 @@ import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.RuntimePermissions;
 
 @RuntimePermissions
-public class WorkingExampleActivity extends AppCompatActivity
+public class DemoActivity extends AppCompatActivity
         implements SeekBar.OnSeekBarChangeListener, iAudioPlayer.Callbacks
 {
-    private static final String TAG = WorkingExampleActivity.class.getSimpleName();
+    private static final String TAG = DemoActivity.class.getSimpleName();
     private static final String EMPTY_STRING = "";
     private ActivityWorkingExampleBinding mViewBinding;
     private iAudioPlayer mAudioPlayer;

@@ -13,7 +13,7 @@
         android:theme="@style/Theme.Gapless_audio_player_838">
 
         <activity
-            android:name=".WorkingExampleActivity"
+            android:name=".DemoActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
