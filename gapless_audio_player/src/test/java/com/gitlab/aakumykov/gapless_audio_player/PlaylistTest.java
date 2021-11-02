@@ -24,9 +24,9 @@ public class PlaylistTest {
     @Before
     public void setUp() throws Exception {
 
-        mSoundItem1 = new SoundItem("Музыка-1", "/path/to/file1.mp3");
-        mSoundItem2 = new SoundItem("Музыка-2", "/path/to/file2.mp3");
-        mSoundItem3 = new SoundItem("Музыка-3", "/path/to/file3.mp3");
+        mSoundItem1 = new SoundItem("id1", "Музыка-1", "/path/to/file1.mp3");
+        mSoundItem2 = new SoundItem("id2", "Музыка-2", "/path/to/file2.mp3");
+        mSoundItem3 = new SoundItem("id3", "Музыка-3", "/path/to/file3.mp3");
 
         mPlaylist = new Playlist();
     }

@@ -13,11 +13,15 @@ import org.mockito.Mock;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 public class GaplessAudioPlayerTest {
 
     private iAudioPlayer mAudioPlayer;
     @Mock private iAudioPlayer.Callbacks mCallbacksMock;
+
+    public static final String ID1 = UUID.randomUUID().toString();
+    public static final String ID2 = UUID.randomUUID().toString();
 
     private static final String TITLE1 = "Музыка1";
     private static final String TITLE2 = "Музыка2";
@@ -26,8 +30,8 @@ public class GaplessAudioPlayerTest {
     private static final String FILE_PATH2 = "/path/to/file/2.mp3";
 
     private SoundItem mSoundItem0;
-    private final SoundItem mSoundItem1 = new SoundItem(TITLE1, FILE_PATH1);
-    private final SoundItem mSoundItem2 = new SoundItem(TITLE2, FILE_PATH2);
+    private final SoundItem mSoundItem1 = new SoundItem(ID1, TITLE1, FILE_PATH1);
+    private final SoundItem mSoundItem2 = new SoundItem(ID2, TITLE2, FILE_PATH2);
 
     private final List<SoundItem> mSoundItemList = Arrays.asList(
             mSoundItem1,
@@ -47,7 +51,7 @@ public class GaplessAudioPlayerTest {
 
         String filePath0 = cacheDir + "/" + fileName;
 
-        mSoundItem0 = new SoundItem("Огни", filePath0);
+        mSoundItem0 = new SoundItem("sound1", "Огни", filePath0);
     }
 
     @After

@@ -22,8 +22,8 @@ public class PlayerTest {
 
     @Before
     public void setUp() throws Exception {
-        mSoundItem1 = new SoundItem("Название песни 1", "/путь/к/файлу1.mp3");
-        mSoundItem2 = new SoundItem("Название песни 2", "/путь/к/файлу2.mp3");
+        mSoundItem1 = new SoundItem("sound1", "Название песни 1", "/путь/к/файлу1.mp3");
+        mSoundItem2 = new SoundItem("sound2", "Название песни 2", "/путь/к/файлу2.mp3");
 
         mPlayer1 = new Player(mSoundItem1);
         mPlayer2 = new Player(mSoundItem2);
