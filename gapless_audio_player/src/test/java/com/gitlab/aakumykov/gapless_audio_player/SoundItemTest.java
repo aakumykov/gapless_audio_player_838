@@ -5,25 +5,33 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.UUID;
+
 public class SoundItemTest {
 
-    private final String mTitle = "Музыка";
-    private final String mFilePath = "/path/to/music/file.mp3";
+    private final static String ID = UUID.randomUUID().toString();
+    private final static String TITLE = "Музыка";
+    private final static String FILE_PATH = "/path/to/music/file.mp3";
     private SoundItem mSoundItem;
 
     @Before
     public void setUp() throws Exception {
-        mSoundItem = new SoundItem(mTitle, mFilePath);
+        mSoundItem = new SoundItem(ID, TITLE, FILE_PATH);
     }
 
     @Test
     public void getFilePath() {
-        assertEquals(mFilePath, mSoundItem.getFilePath());
+        assertEquals(FILE_PATH, mSoundItem.getFilePath());
     }
 
     @Test
     public void getTitle() {
-        assertEquals(mTitle, mSoundItem.getTitle());
+        assertEquals(TITLE, mSoundItem.getTitle());
+    }
+
+    @Test
+    public void getId() {
+        assertEquals(ID, mSoundItem.getId());
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
