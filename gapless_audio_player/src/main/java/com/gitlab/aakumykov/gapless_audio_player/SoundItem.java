@@ -4,12 +4,19 @@ import androidx.annotation.NonNull;
 
 public class SoundItem {
 
+    @NonNull private final String mId;
     @NonNull private final String mTitle;
     @NonNull private final String mFilePath;
 
-    public SoundItem(@NonNull String title, @NonNull String filePath) {
-        this.mTitle = title;
-        this.mFilePath = filePath;
+    public SoundItem(@NonNull String id, @NonNull String title, @NonNull String filePath) {
+        mId = id;
+        mTitle = title;
+        mFilePath = filePath;
+    }
+
+    @NonNull
+    public String getId() {
+        return mId;
     }
 
     @NonNull
@@ -22,11 +29,12 @@ public class SoundItem {
         return mTitle;
     }
 
-    @NonNull @Override
+    @Override
     public String toString() {
-        return SoundItem.class.getSimpleName() + " { " +
-                "title: " + mTitle + ", " +
-                "filePath: " + mFilePath +
-                " }";
+        return "SoundItem{" +
+                "mId='" + mId + '\'' +
+                ", mTitle='" + mTitle + '\'' +
+                ", mFilePath='" + mFilePath + '\'' +
+                '}';
     }
 }
