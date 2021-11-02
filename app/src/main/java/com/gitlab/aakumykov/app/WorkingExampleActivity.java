@@ -24,6 +24,7 @@ import com.gitlab.aakumykov.gapless_audio_player.iAudioPlayer;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.RuntimePermissions;
@@ -157,7 +158,11 @@ public class WorkingExampleActivity extends AppCompatActivity
         if (null != mp3files) {
             for (File soundFile : mp3files) {
                 String fileName = soundFile.getName();
-                soundItemList.add(new SoundItem(fileName, dirName + "/" + fileName));
+                soundItemList.add(new SoundItem(
+                        UUID.randomUUID().toString(),
+                        fileName,
+                        dirName + "/" + fileName
+                ));
             }
         }
 
