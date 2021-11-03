@@ -18,9 +18,9 @@ public interface iAudioPlayer {
     boolean isInitialized();
     boolean isPlaying();
 
-    String getTitle();
-    Progress getProgress();
-    SoundItem getSoundItem();
+    @Nullable String getTitle();
+    @Nullable Progress getProgress();
+    @Nullable SoundItem getSoundItem();
 
     interface Callbacks {
 
