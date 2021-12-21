@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import com.gitlab.aakumykov.exception_utils_module.ExceptionUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -45,6 +46,11 @@ public class GaplessAudioPlayer implements iAudioPlayer {
     @Override
     public void play(@NonNull List<SoundItem> soundItemList) {
         playList(soundItemList);
+    }
+
+    @Override
+    public void play(@NonNull SoundItem soundItem) {
+        play(Collections.singletonList(soundItem));
     }
 
     @Override
