@@ -110,7 +110,7 @@ public class DemoActivity extends AppCompatActivity
         }
         else {
 //            playMusicList();
-            WorkingExampleActivityPermissionsDispatcher.playMusicListWithPermissionCheck(this);
+            DemoActivityPermissionsDispatcher.playMusicListWithPermissionCheck(this);
         }
     }
 
@@ -172,7 +172,7 @@ public class DemoActivity extends AppCompatActivity
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        WorkingExampleActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
+        DemoActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
     }
 
 
