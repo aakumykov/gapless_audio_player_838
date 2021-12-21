@@ -8,6 +8,7 @@ import java.util.List;
 public interface iAudioPlayer {
 
     void play(List<SoundItem> soundItemList);
+    void play(@NonNull SoundItem soundItem);
     void stop();
     void pause(boolean fromUser);
     void resume();
