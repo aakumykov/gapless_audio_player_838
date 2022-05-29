@@ -33,28 +33,11 @@ import permissions.dispatcher.RuntimePermissions;
 public class DemoActivity extends AppCompatActivity
         implements SeekBar.OnSeekBarChangeListener, iAudioPlayer.Callbacks
 {
-    private static final String TAG = DemoActivity.class.getSimpleName();
     private static final String EMPTY_STRING = "";
     private ActivityWorkingExampleBinding mViewBinding;
     private iAudioPlayer mAudioPlayer;
     private boolean mProgressTrackingEnabled = false;
 
-    private final String[] mMusicList = {
-
-            "Gazebo1.mp3",
-            "Gazebo20.mp3",
-            "Gazebo30.mp3",
-            "Africa.mp3",
-            "Rhythm.mp3",
-            "Кортнев.mp3",
-            "Конец Фильма - Огни.mp3"
-
-/*            "440hz.mp3",
-            "500hz.mp3",
-            "600hz.mp3",
-            "700hz.mp3",
-            "800hz.mp3"*/
-    };
 
     private AudioManager mAudioManager;
     private String mMusicDir;
