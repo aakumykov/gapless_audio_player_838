@@ -42,10 +42,10 @@ public interface iAudioPlayer {
 
         void onNoNextTracks();
         void onNoPrevTracks();
+        void onNothingToPlay();
 
         void onPreparingError(@NonNull SoundItem soundItem, @NonNull String errorMsg);
         void onPlayingError(@NonNull SoundItem soundItem, @NonNull String errorMsg);
-        void onCommonError(@NonNull ErrorCode errorCode, @Nullable String errorDetails);
     }
 
 }

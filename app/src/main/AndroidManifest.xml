@@ -13,7 +13,7 @@
         android:theme="@style/Theme.Gapless_audio_player_838">
 
         <activity
-            android:name=".DemoActivity"
+            android:name=".ObservableExampleActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -21,6 +21,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".CallbacksExampleActivity" android:exported="true" />
 
     </application>
 

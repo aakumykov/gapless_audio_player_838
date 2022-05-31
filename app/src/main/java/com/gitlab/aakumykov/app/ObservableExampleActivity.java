@@ -5,7 +5,7 @@ import android.content.Context;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Environment;
-import android.util.Log;
+import android.util.Pair;
 import android.view.View;
 import android.widget.SeekBar;
 import android.widget.Toast;
@@ -14,9 +14,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.gitlab.aakumykov.app.databinding.ActivityWorkingExampleBinding;
-import com.gitlab.aakumykov.gapless_audio_player.ErrorCode;
+import com.gitlab.aakumykov.app.databinding.ActivityObservableExampleBinding;
 import com.gitlab.aakumykov.gapless_audio_player.GaplessAudioPlayer;
+import com.gitlab.aakumykov.gapless_audio_player.PlayerState;
 import com.gitlab.aakumykov.gapless_audio_player.Progress;
 import com.gitlab.aakumykov.gapless_audio_player.SoundItem;
 import com.gitlab.aakumykov.gapless_audio_player.iAudioPlayer;
@@ -26,28 +26,29 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import io.reactivex.disposables.CompositeDisposable;
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.RuntimePermissions;
 
 @RuntimePermissions
-public class DemoActivity extends AppCompatActivity
-        implements SeekBar.OnSeekBarChangeListener, iAudioPlayer.Callbacks
+public class ObservableExampleActivity extends AppCompatActivity
+        implements SeekBar.OnSeekBarChangeListener
 {
     private static final String EMPTY_STRING = "";
-    private ActivityWorkingExampleBinding mViewBinding;
+    private ActivityObservableExampleBinding mViewBinding;
     private iAudioPlayer mAudioPlayer;
     private boolean mProgressTrackingEnabled = false;
 
 
     private AudioManager mAudioManager;
-    private String mMusicDir;
+    private final CompositeDisposable mCompositeDisposable = new CompositeDisposable();
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mViewBinding = ActivityWorkingExampleBinding.inflate(getLayoutInflater());
+        mViewBinding = ActivityObservableExampleBinding.inflate(getLayoutInflater());
         setContentView(mViewBinding.getRoot());
 
         mViewBinding.startButton.setOnClickListener(this::onPlayButtonClicked);
@@ -65,7 +66,24 @@ public class DemoActivity extends AppCompatActivity
 
         mAudioManager = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
 
+        subscribeToAudioPlayer();
         prepareMusicDir();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mCompositeDisposable.clear();
+    }
+
+    private void subscribeToAudioPlayer() {
+        mCompositeDisposable.add(
+                mAudioPlayer.getPlayerStateObservable().subscribe(this::onNewPlayerState)
+        );
+
+        mCompositeDisposable.add(
+                mAudioPlayer.getProgressObservable().subscribe(this::onPlayingProgress)
+        );
     }
 
     @Override
@@ -93,7 +111,7 @@ public class DemoActivity extends AppCompatActivity
         }
         else {
 //            playMusicList();
-            DemoActivityPermissionsDispatcher.playMusicListWithPermissionCheck(this);
+            ObservableExampleActivityPermissionsDispatcher.playMusicListWithPermissionCheck(this);
         }
     }
 
@@ -155,84 +173,117 @@ public class DemoActivity extends AppCompatActivity
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        DemoActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
+        ObservableExampleActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
     }
 
 
 
-    // iAudioPlayer.Callbacks
-    @Override
-    public void onStarted(@NonNull SoundItem soundItem) {
-//        startProgressTracking();
+
+    private void onPlayingProgress(Pair<Integer, Integer> progressPair) {
+        mViewBinding.seekBar.setProgress(progressPair.first);
+        mViewBinding.seekBar.setMax(progressPair.second);
+    }
+
+    private void onNewPlayerState(PlayerState playerState) {
+
+        switch (playerState.mode) {
+            case INACTIVE:
+                break;
+
+            case STARTED:
+                onStarted((PlayerState.Started) playerState);
+                break;
+
+            case STOPPED:
+                onStopped();
+                break;
+
+            case PAUSED:
+                onPaused();
+                break;
+
+            case RESUMED:
+                onResumed();
+                break;
+
+            case NO_NEXT_TRACK:
+                onNoNextTrack();
+                break;
+
+            case NO_PREV_TRACK:
+                onNoPrevTrack();
+                break;
+
+            case NOTHING_TO_PLAY:
+                onNothingToPlay();
+                break;
+
+            case PREPARING_ERROR:
+                onPreparingError((PlayerState.PreparingError) playerState);
+                break;
+
+            case PLAYING_ERROR:
+                onPlayingError((PlayerState.PlayingError) playerState);
+                break;
+
+            default:
+                throw new IllegalArgumentException("Unknown player state: "+playerState);
+        }
+    }
+
+
+    private void onStarted(PlayerState.Started startedPlayerState) {
         showPauseButton();
         hideError();
-        showTrackName(soundItem);
+        showTrackName(startedPlayerState.getSoundItem());
         enableSeekBar();
     }
 
-    @Override
-    public void onStopped() {
+    private void onStopped() {
         showPlayButton();
         hideTrackName();
         disableSeekBar();
     }
 
-    @Override
-    public void onPaused() {
+    private void onPaused() {
         showPlayButton();
     }
 
-    @Override
-    public void onResumed() {
+    private void onResumed() {
         showPauseButton();
     }
 
-    @Override
-    public void onProgress(int position, int duration) {
-        Log.d("PROGRESS", String.valueOf(position));
-        mViewBinding.seekBar.setMax(duration);
-        mViewBinding.seekBar.setProgress(position);
-    }
-
-    @Override
-    public void onNoNextTracks() {
+    private void onNoNextTrack() {
         showToast(getString(R.string.no_more_tracks));
     }
 
-    @Override
-    public void onNoPrevTracks() {
+    private void onNoPrevTrack() {
         showToast(getString(R.string.this_is_first_track));
     }
 
-    @Override
-    public void onPreparingError(@NonNull SoundItem soundItem, @NonNull String errorMsg) {
-        showToast(getString(R.string.preparing_error, soundItem.getTitle()));
+    private void onNothingToPlay() {
+        showToast(getString(R.string.nothing_to_play));
+        showError(getString(R.string.nothing_to_play));
     }
 
-    @Override
-    public void onPlayingError(@NonNull SoundItem soundItem, @NonNull String errorMsg) {
-        showToast(getString(R.string.playing_error, soundItem.getTitle(), errorMsg));
-    }
-
-    @Override
-    public void onCommonError(@NonNull ErrorCode errorCode, @Nullable String errorDetails) {
-
-        String errorMsg;
-
-        switch (errorCode) {
-            case NOTHING_TO_PLAY:
-                errorMsg = getString(R.string.nothing_to_play);
-                break;
-            default:
-                errorMsg = getString(R.string.unknown_error);
-        }
-
-        if (null != errorDetails)
-            errorMsg = getString(R.string.detailed_error, errorMsg, errorDetails);
-
+    private void onPreparingError(PlayerState.PreparingError preparingErrorPlayerState) {
+        String errorMsg = getString(
+                R.string.preparing_error,
+                preparingErrorPlayerState.getSoundItem().getTitle()
+        );
+        showToast(errorMsg);
         showError(errorMsg);
     }
 
+    private void onPlayingError(PlayerState.PlayingError playingErrorPlayerState) {
+        String errorMsg = getString(R.string.playing_error,
+                playingErrorPlayerState.getSoundItem().getTitle(),
+                playingErrorPlayerState.getErrorMessage()
+        );
+        showToast(errorMsg);
+        showError(errorMsg);
+    }
+    
 
     // SeekBar.OnSeekBarChangeListener
     @Override
@@ -255,11 +306,12 @@ public class DemoActivity extends AppCompatActivity
 
     // Разные внутренние методы
     private void prepareMusicDir() {
-        mMusicDir = Environment.getExternalStoragePublicDirectory(
+
+        String musicDir = Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_DOWNLOADS).toString();
 
         mViewBinding.musicDirView.setText(
-                getString(R.string.music_dir, mMusicDir)
+                getString(R.string.music_dir, musicDir)
         );
     }
 

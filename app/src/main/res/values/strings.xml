@@ -8,4 +8,6 @@
     <string name="preparing_error">Ошибка подготовки трека:\n%1$s</string>
     <string name="playing_error">Ошибка воспроизведения \n%1$s:\n%2$s</string>
     <string name="music_dir">Каталог с музыкой:\n%1$s</string>
+    <string name="observable_example">Пример с RxJava Observable</string>
+    <string name="callbacks_example">Пример с коллбеками</string>
 </resources>
