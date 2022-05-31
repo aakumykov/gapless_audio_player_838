@@ -5,7 +5,6 @@ import android.content.Context;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Environment;
-import android.util.Pair;
 import android.view.View;
 import android.widget.SeekBar;
 import android.widget.Toast;
@@ -79,10 +78,6 @@ public class ObservableExampleActivity extends AppCompatActivity
     private void subscribeToAudioPlayer() {
         mCompositeDisposable.add(
                 mAudioPlayer.getPlayerStateObservable().subscribe(this::onNewPlayerState)
-        );
-
-        mCompositeDisposable.add(
-                mAudioPlayer.getProgressObservable().subscribe(this::onPlayingProgress)
         );
     }
 
@@ -178,12 +173,6 @@ public class ObservableExampleActivity extends AppCompatActivity
 
 
 
-
-    private void onPlayingProgress(Pair<Integer, Integer> progressPair) {
-        mViewBinding.seekBar.setProgress(progressPair.first);
-        mViewBinding.seekBar.setMax(progressPair.second);
-    }
-
     private void onNewPlayerState(PlayerState playerState) {
 
         switch (playerState.mode) {
@@ -233,6 +222,7 @@ public class ObservableExampleActivity extends AppCompatActivity
 
 
     private void onStarted(PlayerState.Started startedPlayerState) {
+        startProgressTracking();
         showPauseButton();
         hideError();
         showTrackName(startedPlayerState.getSoundItem());
@@ -240,6 +230,7 @@ public class ObservableExampleActivity extends AppCompatActivity
     }
 
     private void onStopped() {
+        stopProgressTracking();
         showPlayButton();
         hideTrackName();
         disableSeekBar();

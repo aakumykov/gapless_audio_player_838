@@ -61,12 +61,6 @@ public class GaplessAudioPlayer implements iAudioPlayer {
     }
 
     @Override
-    public Observable<Pair<Integer, Integer>> getProgressObservable() {
-        mProgressSubject = BehaviorSubject.createDefault(new Pair<>(0, 0));
-        return mProgressSubject;
-    }
-
-    @Override
     public void play(@NonNull List<SoundItem> soundItemList) {
         playList(soundItemList);
     }

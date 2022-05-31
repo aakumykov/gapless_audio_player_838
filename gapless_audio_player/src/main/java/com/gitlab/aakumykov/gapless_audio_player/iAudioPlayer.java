@@ -1,7 +1,5 @@
 package com.gitlab.aakumykov.gapless_audio_player;
 
-import android.util.Pair;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -12,7 +10,6 @@ import io.reactivex.Observable;
 public interface iAudioPlayer {
 
     Observable<PlayerState> getPlayerStateObservable();
-    Observable<Pair<Integer,Integer>> getProgressObservable();
 
     void play(@NonNull List<SoundItem> soundItemList);
     void play(@NonNull SoundItem soundItem);
