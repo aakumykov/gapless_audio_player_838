@@ -5,7 +5,11 @@ import androidx.annotation.Nullable;
 
 import java.util.List;
 
+import io.reactivex.Observable;
+
 public interface iAudioPlayer {
+
+    Observable<PlayerState> getPlayerStateObservable();
 
     void play(@NonNull List<SoundItem> soundItemList);
     void play(@NonNull SoundItem soundItem);
@@ -35,9 +39,10 @@ public interface iAudioPlayer {
 
         void onNoNextTracks();
         void onNoPrevTracks();
+        void onNothingToPlay();
 
         void onPreparingError(@NonNull SoundItem soundItem, @NonNull String errorMsg);
         void onPlayingError(@NonNull SoundItem soundItem, @NonNull String errorMsg);
-        void onCommonError(@NonNull ErrorCode errorCode, @Nullable String errorDetails);
     }
+
 }

@@ -13,56 +13,41 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.gitlab.aakumykov.app.databinding.ActivityWorkingExampleBinding;
-import com.gitlab.aakumykov.gapless_audio_player.ErrorCode;
+import com.gitlab.aakumykov.app.databinding.ActivityObservableExampleBinding;
 import com.gitlab.aakumykov.gapless_audio_player.GaplessAudioPlayer;
+import com.gitlab.aakumykov.gapless_audio_player.PlayerState;
 import com.gitlab.aakumykov.gapless_audio_player.Progress;
 import com.gitlab.aakumykov.gapless_audio_player.SoundItem;
 import com.gitlab.aakumykov.gapless_audio_player.iAudioPlayer;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.UUID;
 
+import io.reactivex.disposables.CompositeDisposable;
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.RuntimePermissions;
 
 @RuntimePermissions
-public class WorkingExampleActivity extends AppCompatActivity
-        implements SeekBar.OnSeekBarChangeListener, iAudioPlayer.Callbacks
+public class ObservableExampleActivity extends AppCompatActivity
+        implements SeekBar.OnSeekBarChangeListener
 {
-    private static final String TAG = WorkingExampleActivity.class.getSimpleName();
     private static final String EMPTY_STRING = "";
-    private ActivityWorkingExampleBinding mViewBinding;
+    private ActivityObservableExampleBinding mViewBinding;
     private iAudioPlayer mAudioPlayer;
     private boolean mProgressTrackingEnabled = false;
 
-    private final String[] mMusicList = {
-
-            "Gazebo1.mp3",
-            "Gazebo20.mp3",
-            "Gazebo30.mp3",
-            "Africa.mp3",
-            "Rhythm.mp3",
-            "Кортнев.mp3",
-            "Конец Фильма - Огни.mp3"
-
-/*            "440hz.mp3",
-            "500hz.mp3",
-            "600hz.mp3",
-            "700hz.mp3",
-            "800hz.mp3"*/
-    };
 
     private AudioManager mAudioManager;
-    private String mMusicDir;
+    private final CompositeDisposable mCompositeDisposable = new CompositeDisposable();
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mViewBinding = ActivityWorkingExampleBinding.inflate(getLayoutInflater());
+        mViewBinding = ActivityObservableExampleBinding.inflate(getLayoutInflater());
         setContentView(mViewBinding.getRoot());
 
         mViewBinding.startButton.setOnClickListener(this::onPlayButtonClicked);
@@ -76,17 +61,24 @@ public class WorkingExampleActivity extends AppCompatActivity
         mViewBinding.seekBar.setOnSeekBarChangeListener(this);
         disableSeekBar();
 
-        mAudioPlayer = new GaplessAudioPlayer(this);
+        mAudioPlayer = new GaplessAudioPlayer();
 
         mAudioManager = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
 
+        subscribeToAudioPlayer();
         prepareMusicDir();
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        WorkingExampleActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
+    protected void onDestroy() {
+        super.onDestroy();
+        mCompositeDisposable.clear();
+    }
+
+    private void subscribeToAudioPlayer() {
+        mCompositeDisposable.add(
+                mAudioPlayer.getPlayerStateObservable().subscribe(this::onNewPlayerState)
+        );
     }
 
     @Override
@@ -103,29 +95,6 @@ public class WorkingExampleActivity extends AppCompatActivity
     }
 
 
-    @NeedsPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
-    void playMusicList() {
-
-        List<SoundItem> soundItemList = Stream.of(mMusicList).map(fileName ->
-                new SoundItem(
-                    fileName,
-                    mMusicDir + "/" + fileName
-                )
-        ).collect(Collectors.toList());
-
-        mAudioPlayer.play(soundItemList);
-    }
-
-
-    private void prepareMusicDir() {
-        mMusicDir = Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_DOWNLOADS).toString();
-
-        mViewBinding.musicDirView.setText(
-                getString(R.string.music_dir, mMusicDir)
-        );
-    }
-
 
     private void onPlayButtonClicked(View view) {
 
@@ -136,7 +105,8 @@ public class WorkingExampleActivity extends AppCompatActivity
                 mAudioPlayer.resume();
         }
         else {
-            WorkingExampleActivityPermissionsDispatcher.playMusicListWithPermissionCheck(this);
+//            playMusicList();
+            ObservableExampleActivityPermissionsDispatcher.playMusicListWithPermissionCheck(this);
         }
     }
 
@@ -163,88 +133,148 @@ public class WorkingExampleActivity extends AppCompatActivity
         showMusicVolumeLevel();
     }
 
-    private void showMusicVolumeLevel() {
-        mViewBinding.soundVolumeView.setText(String.valueOf(mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC)));
-        mViewBinding.soundVolumeView.postDelayed(this::hideMusicVolumeLevel, 1000);
+
+    // Запрос разрешений
+    // TODO: реагировать на отказ
+    @NeedsPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+    void playMusicList() {
+
+        String dirName = Environment
+                .getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                .getAbsolutePath();
+
+        @Nullable
+        File[] mp3files = new File(dirName).listFiles(file -> {
+            String fileName = file.getName();
+            return fileName.matches("^.+\\.mp3$");
+        });
+
+        List<SoundItem> soundItemList = new ArrayList<>();
+
+        if (null != mp3files) {
+            for (File soundFile : mp3files) {
+                String fileName = soundFile.getName();
+                soundItemList.add(new SoundItem(
+                        UUID.randomUUID().toString(),
+                        fileName,
+                        dirName + "/" + fileName
+                ));
+            }
+        }
+
+        mAudioPlayer.play(soundItemList);
     }
 
-    private void hideMusicVolumeLevel() {
-        mViewBinding.soundVolumeView.setText(EMPTY_STRING);
-    }
-
-
-    // iAudioPlayer.Callbacks
     @Override
-    public void onStarted(@NonNull SoundItem soundItem) {
-//        startProgressTracking();
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        ObservableExampleActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
+    }
+
+
+
+    private void onNewPlayerState(PlayerState playerState) {
+
+        switch (playerState.mode) {
+            case INACTIVE:
+                break;
+
+            case STARTED:
+                onStarted((PlayerState.Started) playerState);
+                break;
+
+            case STOPPED:
+                onStopped();
+                break;
+
+            case PAUSED:
+                onPaused();
+                break;
+
+            case RESUMED:
+                onResumed();
+                break;
+
+            case NO_NEXT_TRACK:
+                onNoNextTrack();
+                break;
+
+            case NO_PREV_TRACK:
+                onNoPrevTrack();
+                break;
+
+            case NOTHING_TO_PLAY:
+                onNothingToPlay();
+                break;
+
+            case PREPARING_ERROR:
+                onPreparingError((PlayerState.PreparingError) playerState);
+                break;
+
+            case PLAYING_ERROR:
+                onPlayingError((PlayerState.PlayingError) playerState);
+                break;
+
+            default:
+                throw new IllegalArgumentException("Unknown player state: "+playerState);
+        }
+    }
+
+
+    private void onStarted(PlayerState.Started startedPlayerState) {
+        startProgressTracking();
         showPauseButton();
         hideError();
-        showTrackName(soundItem);
+        showTrackName(startedPlayerState.getSoundItem());
         enableSeekBar();
     }
 
-    @Override
-    public void onStopped() {
+    private void onStopped() {
+        stopProgressTracking();
         showPlayButton();
         hideTrackName();
         disableSeekBar();
     }
 
-    @Override
-    public void onPaused() {
+    private void onPaused() {
         showPlayButton();
     }
 
-    @Override
-    public void onResumed() {
+    private void onResumed() {
         showPauseButton();
     }
 
-    @Override
-    public void onProgress(int position, int duration) {
-        mViewBinding.seekBar.setMax(duration);
-        mViewBinding.seekBar.setProgress(position);
-    }
-
-    @Override
-    public void onNoNextTracks() {
+    private void onNoNextTrack() {
         showToast(getString(R.string.no_more_tracks));
     }
 
-    @Override
-    public void onNoPrevTracks() {
+    private void onNoPrevTrack() {
         showToast(getString(R.string.this_is_first_track));
     }
 
-    @Override
-    public void onPreparingError(@NonNull SoundItem soundItem, @NonNull String errorMsg) {
-        showToast(getString(R.string.preparing_error, soundItem.getTitle()));
+    private void onNothingToPlay() {
+        showToast(getString(R.string.nothing_to_play));
+        showError(getString(R.string.nothing_to_play));
     }
 
-    @Override
-    public void onPlayingError(@NonNull SoundItem soundItem, @NonNull String errorMsg) {
-        showToast(getString(R.string.playing_error, soundItem.getTitle(), errorMsg));
-    }
-
-    @Override
-    public void onCommonError(@NonNull ErrorCode errorCode, @Nullable String errorDetails) {
-
-        String errorMsg;
-
-        switch (errorCode) {
-            case NOTHING_TO_PLAY:
-                errorMsg = getString(R.string.nothing_to_play);
-                break;
-            default:
-                errorMsg = getString(R.string.unknown_error);
-        }
-
-        if (null != errorDetails)
-            errorMsg = getString(R.string.detailed_error, errorMsg, errorDetails);
-
+    private void onPreparingError(PlayerState.PreparingError preparingErrorPlayerState) {
+        String errorMsg = getString(
+                R.string.preparing_error,
+                preparingErrorPlayerState.getSoundItem().getTitle()
+        );
+        showToast(errorMsg);
         showError(errorMsg);
     }
 
+    private void onPlayingError(PlayerState.PlayingError playingErrorPlayerState) {
+        String errorMsg = getString(R.string.playing_error,
+                playingErrorPlayerState.getSoundItem().getTitle(),
+                playingErrorPlayerState.getErrorMessage()
+        );
+        showToast(errorMsg);
+        showError(errorMsg);
+    }
+    
 
     // SeekBar.OnSeekBarChangeListener
     @Override
@@ -261,6 +291,29 @@ public class WorkingExampleActivity extends AppCompatActivity
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
 
+    }
+
+
+
+    // Разные внутренние методы
+    private void prepareMusicDir() {
+
+        String musicDir = Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_DOWNLOADS).toString();
+
+        mViewBinding.musicDirView.setText(
+                getString(R.string.music_dir, musicDir)
+        );
+    }
+
+
+    private void showMusicVolumeLevel() {
+        mViewBinding.soundVolumeView.setText(String.valueOf(mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC)));
+        mViewBinding.soundVolumeView.postDelayed(this::hideMusicVolumeLevel, 1000);
+    }
+
+    private void hideMusicVolumeLevel() {
+        mViewBinding.soundVolumeView.setText(EMPTY_STRING);
     }
 
 
