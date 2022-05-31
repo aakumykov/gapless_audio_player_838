@@ -386,6 +386,7 @@ public class GaplessAudioPlayer implements iAudioPlayer {
     // Методы отслеживания прогресса
     private void startProgressTracking() {
 
+/*
         mTimerTask = new TimerTask() {
             @Override
             public void run() {
@@ -396,6 +397,7 @@ public class GaplessAudioPlayer implements iAudioPlayer {
         mTimer = new Timer();
 
         mTimer.scheduleAtFixedRate(mTimerTask, 0, PROGRESS_UPDATE_PERIOD_MS);
+*/
     }
 
     private synchronized void trackProgress() {
