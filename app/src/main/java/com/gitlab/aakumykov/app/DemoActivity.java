@@ -61,7 +61,7 @@ public class DemoActivity extends AppCompatActivity
         mViewBinding.seekBar.setOnSeekBarChangeListener(this);
         disableSeekBar();
 
-        mAudioPlayer = new GaplessAudioPlayer(this);
+        mAudioPlayer = new GaplessAudioPlayer();
 
         mAudioManager = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
 

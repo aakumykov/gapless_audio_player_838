@@ -11,6 +11,7 @@ import com.gitlab.aakumykov.exception_utils_module.ExceptionUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -24,7 +25,7 @@ public class GaplessAudioPlayer implements iAudioPlayer {
     private final Playlist mPlaylist = new Playlist();
 
     private final MediaPlayer.OnCompletionListener mCompletionListener;
-    private final iAudioPlayer.Callbacks mCallbacks;
+    @Nullable private iAudioPlayer.Callbacks mCallbacks;
 
     private final List<Player> mPlayersChain = new ArrayList<>();
     @Nullable private Player mCurrentPlayer;
@@ -34,6 +35,10 @@ public class GaplessAudioPlayer implements iAudioPlayer {
     private Timer mTimer;
     private TimerTask mTimerTask;
 
+
+    public GaplessAudioPlayer() {
+        mCompletionListener = this::onAudioTrackCompleted;
+    }
 
     public GaplessAudioPlayer(@NonNull iAudioPlayer.Callbacks callbacks) {
 
@@ -83,7 +88,7 @@ public class GaplessAudioPlayer implements iAudioPlayer {
                 start();
             }
             else
-                mCallbacks.onNoNextTracks();
+                Optional.ofNullable(mCallbacks).ifPresent(Callbacks::onNoNextTracks);
         }
     }
 
@@ -148,11 +153,13 @@ public class GaplessAudioPlayer implements iAudioPlayer {
                 try {
                     mCurrentPlayer.start();
                     mIsPlaying = true;
-                    mCallbacks.onStarted(soundItem);
+                    Optional.ofNullable(mCallbacks).ifPresent(callbacks ->
+                            callbacks.onStarted(soundItem));
                     startProgressTracking();
                 }
                 catch (Exception e) {
-                    mCallbacks.onPlayingError(soundItem, ExceptionUtils.getErrorMessage(e));
+                    Optional.ofNullable(mCallbacks).ifPresent(callbacks ->
+                            callbacks.onPlayingError(soundItem, ExceptionUtils.getErrorMessage(e)));
                     Log.e(TAG, "Ошибка воспроизведения", e);
                 }
             }
@@ -180,7 +187,7 @@ public class GaplessAudioPlayer implements iAudioPlayer {
             playList(unshiftedList);
         }
         else {
-            mCallbacks.onNoPrevTracks();
+            Optional.ofNullable(mCallbacks).ifPresent(Callbacks::onNoPrevTracks);
         }
     }
 
@@ -200,7 +207,8 @@ public class GaplessAudioPlayer implements iAudioPlayer {
 
                 mIsInitialized = false;
                 mIsPlaying = false;
-                mCallbacks.onStopped();
+
+                Optional.ofNullable(mCallbacks).ifPresent(Callbacks::onStopped);
             }
     }
 
@@ -237,7 +245,8 @@ public class GaplessAudioPlayer implements iAudioPlayer {
                 if (null != player)
                     player.release();
 
-                mCallbacks.onPreparingError(soundItem, ExceptionUtils.getErrorMessage(e));
+                Optional.ofNullable(mCallbacks).ifPresent(callbacks ->
+                    callbacks.onPreparingError(soundItem, ExceptionUtils.getErrorMessage(e)));
 
                 Log.e(TAG, "Ошибка обработки трека: "+soundItem, e);
             }
@@ -270,7 +279,8 @@ public class GaplessAudioPlayer implements iAudioPlayer {
         if (null != mCurrentPlayer) {
             mCurrentPlayer.start();
             mIsPlaying = true;
-            mCallbacks.onResumed();
+
+            Optional.ofNullable(mCallbacks).ifPresent(Callbacks::onResumed);
             startProgressTracking();
         }
     }
@@ -278,7 +288,8 @@ public class GaplessAudioPlayer implements iAudioPlayer {
     private synchronized void  pauseCurrentPlayer() {
         if (null != mCurrentPlayer) {
             mCurrentPlayer.pause();
-            mCallbacks.onPaused();
+
+            Optional.ofNullable(mCallbacks).ifPresent(Callbacks::onPaused);
             stopProgressTracking();
         }
     }
@@ -362,10 +373,11 @@ public class GaplessAudioPlayer implements iAudioPlayer {
             return;
         }
 
-        mCallbacks.onProgress(
+        Optional.ofNullable(mCallbacks).ifPresent(callbacks ->
+            callbacks.onProgress(
                 mCurrentPlayer.getCurrentPosition(),
                 mCurrentPlayer.getDuration()
-        );
+        ));
     }
 
     private void stopProgressTracking() {
@@ -388,7 +400,9 @@ public class GaplessAudioPlayer implements iAudioPlayer {
 
             mCurrentPlayer = nextPlayer;
             mPlaylist.setActiveItem(mCurrentPlayer.getSoundItem());
-            mCallbacks.onStarted(mCurrentPlayer.getSoundItem());
+
+            Optional.ofNullable(mCallbacks).ifPresent(callbacks ->
+                callbacks.onStarted(mCurrentPlayer.getSoundItem()));
 
             startProgressTracking();
         }
@@ -397,7 +411,8 @@ public class GaplessAudioPlayer implements iAudioPlayer {
 
     // Вспомогательные методы
     private void nothingToPlay() {
-        mCallbacks.onCommonError(ErrorCode.NOTHING_TO_PLAY, null);
+        Optional.ofNullable(mCallbacks).ifPresent(callbacks ->
+            callbacks.onCommonError(ErrorCode.NOTHING_TO_PLAY, null));
         Log.e(TAG, "Нечего воспроизводить.");
     }
 }
