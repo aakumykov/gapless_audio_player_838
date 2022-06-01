@@ -27,22 +27,4 @@ public interface iAudioPlayer {
     @Nullable Progress getProgress();
     @Nullable SoundItem getSoundItem();
 
-    interface Callbacks {
-
-        void onStarted(@NonNull SoundItem soundItem);
-        void onStopped();
-
-        void onPaused();
-        void onResumed();
-
-        void onProgress(int position, int duration);
-
-        void onNoNextTracks();
-        void onNoPrevTracks();
-        void onNothingToPlay();
-
-        void onPreparingError(@NonNull SoundItem soundItem, @NonNull String errorMsg);
-        void onPlayingError(@NonNull SoundItem soundItem, @NonNull String errorMsg);
-    }
-
 }

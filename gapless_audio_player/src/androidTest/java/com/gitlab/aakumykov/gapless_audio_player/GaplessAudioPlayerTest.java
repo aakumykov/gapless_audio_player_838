@@ -1,7 +1,5 @@
 package com.gitlab.aakumykov.gapless_audio_player;
 
-import static org.junit.Assert.assertFalse;
-
 import android.content.Context;
 
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -15,10 +13,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+import static org.junit.Assert.assertFalse;
+
 public class GaplessAudioPlayerTest {
 
     private iAudioPlayer mAudioPlayer;
-    @Mock private iAudioPlayer.Callbacks mCallbacksMock;
+    @Mock private GapplessPlayerCallbacks mCallbacksMock;
 
     public static final String ID1 = UUID.randomUUID().toString();
     public static final String ID2 = UUID.randomUUID().toString();

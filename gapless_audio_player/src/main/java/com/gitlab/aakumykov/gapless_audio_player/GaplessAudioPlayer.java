@@ -28,7 +28,7 @@ public class GaplessAudioPlayer implements iAudioPlayer {
     private final Playlist mPlaylist = new Playlist();
 
     private final MediaPlayer.OnCompletionListener mCompletionListener;
-    @Nullable private iAudioPlayer.Callbacks mCallbacks;
+    @Nullable private GapplessPlayerCallbacks mCallbacks;
 
     private final List<Player> mPlayersChain = new ArrayList<>();
     @Nullable private Player mCurrentPlayer;
@@ -46,7 +46,7 @@ public class GaplessAudioPlayer implements iAudioPlayer {
         mCompletionListener = this::onAudioTrackCompleted;
     }
 
-    public GaplessAudioPlayer(@NonNull iAudioPlayer.Callbacks callbacks) {
+    public GaplessAudioPlayer(@NonNull GapplessPlayerCallbacks callbacks) {
 
         mCallbacks = callbacks;
 
@@ -100,7 +100,7 @@ public class GaplessAudioPlayer implements iAudioPlayer {
                 start();
             }
             else {
-                Optional.ofNullable(mCallbacks).ifPresent(Callbacks::onNoNextTracks);
+                Optional.ofNullable(mCallbacks).ifPresent(GapplessPlayerCallbacks::onNoNextTracks);
                 setPlayerState(new GaplessPlayerState.NoNextTrack());
             }
         }
@@ -213,7 +213,7 @@ public class GaplessAudioPlayer implements iAudioPlayer {
             playList(unshiftedList);
         }
         else {
-            Optional.ofNullable(mCallbacks).ifPresent(Callbacks::onNoPrevTracks);
+            Optional.ofNullable(mCallbacks).ifPresent(GapplessPlayerCallbacks::onNoPrevTracks);
             setPlayerState(new GaplessPlayerState.NoPrevTrack());
         }
     }
@@ -235,7 +235,7 @@ public class GaplessAudioPlayer implements iAudioPlayer {
                 mIsInitialized = false;
                 mIsPlaying = false;
 
-                Optional.ofNullable(mCallbacks).ifPresent(Callbacks::onStopped);
+                Optional.ofNullable(mCallbacks).ifPresent(GapplessPlayerCallbacks::onStopped);
 
                 setPlayerState(new GaplessPlayerState.Stopped());
             }
@@ -311,7 +311,7 @@ public class GaplessAudioPlayer implements iAudioPlayer {
             mCurrentPlayer.start();
             mIsPlaying = true;
 
-            Optional.ofNullable(mCallbacks).ifPresent(Callbacks::onResumed);
+            Optional.ofNullable(mCallbacks).ifPresent(GapplessPlayerCallbacks::onResumed);
             setPlayerState(new GaplessPlayerState.Resumed());
 
             startProgressTracking();
@@ -322,7 +322,7 @@ public class GaplessAudioPlayer implements iAudioPlayer {
         if (null != mCurrentPlayer) {
             mCurrentPlayer.pause();
 
-            Optional.ofNullable(mCallbacks).ifPresent(Callbacks::onPaused);
+            Optional.ofNullable(mCallbacks).ifPresent(GapplessPlayerCallbacks::onPaused);
             setPlayerState(new GaplessPlayerState.Paused());
 
             stopProgressTracking();
@@ -336,7 +336,7 @@ public class GaplessAudioPlayer implements iAudioPlayer {
         if (mPlayersChain.size() > 0)
             start();
         else {
-            Optional.ofNullable(mCallbacks).ifPresent(Callbacks::onNothingToPlay);
+            Optional.ofNullable(mCallbacks).ifPresent(GapplessPlayerCallbacks::onNothingToPlay);
             setPlayerState(new GaplessPlayerState.NothingToPlay());
         }
     }
