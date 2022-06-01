@@ -2,7 +2,6 @@ package com.gitlab.aakumykov.gapless_audio_player;
 
 import android.media.MediaPlayer;
 import android.util.Log;
-import android.util.Pair;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -13,8 +12,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import io.reactivex.Observable;
 import io.reactivex.subjects.BehaviorSubject;
@@ -23,7 +20,7 @@ public class GaplessAudioPlayer {
 
     private static final String TAG = GaplessAudioPlayer.class.getSimpleName();
     private static final int TRACK_BEGINNING_THRESHOLD_MS = 1000;
-    private static final long PROGRESS_UPDATE_PERIOD_MS = 100;
+//    private static final long PROGRESS_UPDATE_PERIOD_MS = 100;
 
     private final Playlist mPlaylist = new Playlist();
 
@@ -35,11 +32,10 @@ public class GaplessAudioPlayer {
 
     private boolean mIsInitialized = false;
     private boolean mIsPlaying = false;
-    private Timer mTimer;
-    private TimerTask mTimerTask;
+//    private Timer mTimer;
+//    private TimerTask mTimerTask;
 
     @Nullable private BehaviorSubject<GaplessPlayerState> mPlayerStateSubject;
-    @Nullable private BehaviorSubject<Pair<Integer,Integer>> mProgressSubject;
 
 
     public GaplessAudioPlayer() {
@@ -408,8 +404,8 @@ public class GaplessAudioPlayer {
     }
 
     private void stopProgressTracking() {
-        if (null != mTimerTask)
-            mTimerTask.cancel();
+//        if (null != mTimerTask)
+//            mTimerTask.cancel();
     }
 
 
