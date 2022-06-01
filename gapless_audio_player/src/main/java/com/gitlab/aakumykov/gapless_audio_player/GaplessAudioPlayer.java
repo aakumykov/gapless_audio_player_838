@@ -19,7 +19,7 @@ import java.util.TimerTask;
 import io.reactivex.Observable;
 import io.reactivex.subjects.BehaviorSubject;
 
-public class GaplessAudioPlayer implements iAudioPlayer {
+public class GaplessAudioPlayer {
 
     private static final String TAG = GaplessAudioPlayer.class.getSimpleName();
     private static final int TRACK_BEGINNING_THRESHOLD_MS = 1000;
@@ -54,23 +54,19 @@ public class GaplessAudioPlayer implements iAudioPlayer {
     }
 
 
-    @Override
     public Observable<GaplessPlayerState> getPlayerStateObservable() {
         mPlayerStateSubject = BehaviorSubject.createDefault(new GaplessPlayerState.Inactive());
         return mPlayerStateSubject;
     }
 
-    @Override
     public void play(@NonNull List<SoundItem> soundItemList) {
         playList(soundItemList);
     }
 
-    @Override
     public void play(@NonNull SoundItem soundItem) {
         play(Collections.singletonList(soundItem));
     }
 
-    @Override
     public void pause(boolean fromUser) {
         pauseCurrentPlayer();
 
@@ -78,19 +74,16 @@ public class GaplessAudioPlayer implements iAudioPlayer {
             mIsPlaying = false;
     }
 
-    @Override
     public void resume() {
         resumeCurrentPlayer();
     }
 
-    @Override
     public void stop() {
         stopCurrentPlayer();
         clearAllPlayers();
         clearPlaylist();
     }
 
-    @Override
     public synchronized void next() {
         if (null != mCurrentPlayer)
         {
@@ -106,7 +99,6 @@ public class GaplessAudioPlayer implements iAudioPlayer {
         }
     }
 
-    @Override
     public synchronized void prev() {
         if (null != mCurrentPlayer)
         {
@@ -117,24 +109,21 @@ public class GaplessAudioPlayer implements iAudioPlayer {
         }
     }
 
-    @Override
     public synchronized void seekTo(int position) {
         if (null != mCurrentPlayer)
             mCurrentPlayer.seekTo(position);
     }
 
-    @Override
     public synchronized boolean isInitialized() {
         return mIsInitialized;
     }
 
-    @Override
     public synchronized boolean isPlaying() {
 //        return (null != mCurrentPlayer && mCurrentPlayer.isPlaying());
         return mIsPlaying;
     }
 
-    @Override @Nullable
+    @Nullable
     public synchronized String getTitle() {
         return (null != mCurrentPlayer) ?
                 mCurrentPlayer.getSoundItem().getTitle() :
@@ -142,14 +131,14 @@ public class GaplessAudioPlayer implements iAudioPlayer {
     }
 
     // TODO: убрать, чтобы избежать двойного отслеживания...
-    @Override @Nullable
+    @Nullable
     public synchronized Progress getProgress() {
         return (null != mCurrentPlayer && mCurrentPlayer.isNotStopped()) ?
                 new Progress(mCurrentPlayer.getCurrentPosition(), mCurrentPlayer.getDuration()) :
                 null;
     }
 
-    @Override @Nullable
+    @Nullable
     public synchronized SoundItem getSoundItem() {
         return (null != mCurrentPlayer) ?
                 mCurrentPlayer.getSoundItem() :
@@ -388,8 +377,7 @@ public class GaplessAudioPlayer implements iAudioPlayer {
 
 /*
         mTimerTask = new TimerTask() {
-            @Override
-            public void run() {
+                    public void run() {
                 trackProgress();
             }
         };
