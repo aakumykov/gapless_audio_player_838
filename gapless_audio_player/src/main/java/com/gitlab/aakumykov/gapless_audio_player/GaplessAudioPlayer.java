@@ -29,7 +29,7 @@ public class GaplessAudioPlayer {
     private final Playlist mPlaylist = new Playlist();
 
     private final MediaPlayer.OnCompletionListener mCompletionListener;
-    @Nullable private GapplessPlayerCallbacks mCallbacks;
+    @Nullable private GaplessPlayerCallbacks mCallbacks;
 
     private final List<Player> mPlayersChain = new ArrayList<>();
     @Nullable private Player mCurrentPlayer;
@@ -46,7 +46,7 @@ public class GaplessAudioPlayer {
         mCompletionListener = this::onAudioTrackCompleted;
     }
 
-    public GaplessAudioPlayer(@NonNull GapplessPlayerCallbacks callbacks) {
+    public GaplessAudioPlayer(@NonNull GaplessPlayerCallbacks callbacks) {
 
         mCallbacks = callbacks;
 
@@ -93,7 +93,7 @@ public class GaplessAudioPlayer {
                 start();
             }
             else {
-                Optional.ofNullable(mCallbacks).ifPresent(GapplessPlayerCallbacks::onNoNextTracks);
+                Optional.ofNullable(mCallbacks).ifPresent(GaplessPlayerCallbacks::onNoNextTracks);
                 setPlayerState(new GaplessPlayerState.NoNextTrack());
             }
         }
@@ -202,7 +202,7 @@ public class GaplessAudioPlayer {
             playList(unshiftedList);
         }
         else {
-            Optional.ofNullable(mCallbacks).ifPresent(GapplessPlayerCallbacks::onNoPrevTracks);
+            Optional.ofNullable(mCallbacks).ifPresent(GaplessPlayerCallbacks::onNoPrevTracks);
             setPlayerState(new GaplessPlayerState.NoPrevTrack());
         }
     }
@@ -224,7 +224,7 @@ public class GaplessAudioPlayer {
                 mIsInitialized = false;
                 mIsPlaying = false;
 
-                Optional.ofNullable(mCallbacks).ifPresent(GapplessPlayerCallbacks::onStopped);
+                Optional.ofNullable(mCallbacks).ifPresent(GaplessPlayerCallbacks::onStopped);
 
                 setPlayerState(new GaplessPlayerState.Stopped());
             }
@@ -300,7 +300,7 @@ public class GaplessAudioPlayer {
             mCurrentPlayer.start();
             mIsPlaying = true;
 
-            Optional.ofNullable(mCallbacks).ifPresent(GapplessPlayerCallbacks::onResumed);
+            Optional.ofNullable(mCallbacks).ifPresent(GaplessPlayerCallbacks::onResumed);
             setPlayerState(new GaplessPlayerState.Resumed());
 
             startProgressTracking();
@@ -311,7 +311,7 @@ public class GaplessAudioPlayer {
         if (null != mCurrentPlayer) {
             mCurrentPlayer.pause();
 
-            Optional.ofNullable(mCallbacks).ifPresent(GapplessPlayerCallbacks::onPaused);
+            Optional.ofNullable(mCallbacks).ifPresent(GaplessPlayerCallbacks::onPaused);
             setPlayerState(new GaplessPlayerState.Paused());
 
             stopProgressTracking();
@@ -325,7 +325,7 @@ public class GaplessAudioPlayer {
         if (mPlayersChain.size() > 0)
             start();
         else {
-            Optional.ofNullable(mCallbacks).ifPresent(GapplessPlayerCallbacks::onNothingToPlay);
+            Optional.ofNullable(mCallbacks).ifPresent(GaplessPlayerCallbacks::onNothingToPlay);
             setPlayerState(new GaplessPlayerState.NothingToPlay());
         }
     }
