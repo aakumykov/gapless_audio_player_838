@@ -14,10 +14,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.gitlab.aakumykov.app.databinding.ActivityCallbacksExampleBinding;
+import com.gitlab.aakumykov.app.databinding.ActivityDemoBinding;
 import com.gitlab.aakumykov.gapless_audio_player.GaplessAudioPlayer;
-import com.gitlab.aakumykov.gapless_audio_player.SoundItem;
-import com.gitlab.aakumykov.gapless_audio_player.iAudioPlayer;
+import com.gitlab.aakumykov.gapless_audio_player.GapplessPlayerCallbacks;
+import com.gitlab.aakumykov.gapless_audio_player.stuff.SoundItem;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -29,11 +29,11 @@ import permissions.dispatcher.RuntimePermissions;
 
 @RuntimePermissions
 public class CallbacksExampleActivity extends AppCompatActivity
-        implements SeekBar.OnSeekBarChangeListener, iAudioPlayer.Callbacks
+        implements SeekBar.OnSeekBarChangeListener, GapplessPlayerCallbacks
 {
     private static final String EMPTY_STRING = "";
-    private ActivityCallbacksExampleBinding mViewBinding;
-    private iAudioPlayer mAudioPlayer;
+    private ActivityDemoBinding mViewBinding;
+    private GaplessAudioPlayer mGaplessAudioPlayer;
 //    private boolean mProgressTrackingEnabled = false;
 
 
@@ -44,8 +44,10 @@ public class CallbacksExampleActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mViewBinding = ActivityCallbacksExampleBinding.inflate(getLayoutInflater());
+        mViewBinding = ActivityDemoBinding.inflate(getLayoutInflater());
         setContentView(mViewBinding.getRoot());
+
+        mViewBinding.demoLabelView.setText(R.string.callbacks_example);
 
         mViewBinding.startButton.setOnClickListener(this::onPlayButtonClicked);
         mViewBinding.stopButton.setOnClickListener(this::onStopButtonClicked);
@@ -56,9 +58,10 @@ public class CallbacksExampleActivity extends AppCompatActivity
         mViewBinding.decreaseVolumeButton.setOnClickListener(this::onDecreaseVolumeButtonClicked);
 
         mViewBinding.seekBar.setOnSeekBarChangeListener(this);
+
         disableSeekBar();
 
-        mAudioPlayer = new GaplessAudioPlayer(this);
+        mGaplessAudioPlayer = new GaplessAudioPlayer(this);
 
         mAudioManager = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
 
@@ -68,25 +71,25 @@ public class CallbacksExampleActivity extends AppCompatActivity
     @Override
     protected void onPause() {
         super.onPause();
-        mAudioPlayer.pause(false);
+        mGaplessAudioPlayer.pause(false);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (mAudioPlayer.isPlaying())
-            mAudioPlayer.resume();
+        if (mGaplessAudioPlayer.isPlaying())
+            mGaplessAudioPlayer.resume();
     }
 
 
 
     private void onPlayButtonClicked(View view) {
 
-        if (mAudioPlayer.isInitialized()) {
-            if (mAudioPlayer.isPlaying())
-                mAudioPlayer.pause(true);
+        if (mGaplessAudioPlayer.isInitialized()) {
+            if (mGaplessAudioPlayer.isPlaying())
+                mGaplessAudioPlayer.pause(true);
             else
-                mAudioPlayer.resume();
+                mGaplessAudioPlayer.resume();
         }
         else {
 //            playMusicList();
@@ -95,16 +98,16 @@ public class CallbacksExampleActivity extends AppCompatActivity
     }
 
     private void onStopButtonClicked(View view) {
-        if (mAudioPlayer.isInitialized())
-            mAudioPlayer.stop();
+        if (mGaplessAudioPlayer.isInitialized())
+            mGaplessAudioPlayer.stop();
     }
 
     private void onNextButtonClicked(View view) {
-        mAudioPlayer.next();
+        mGaplessAudioPlayer.next();
     }
 
     private void onPrevButtonClicked(View view) {
-        mAudioPlayer.prev();
+        mGaplessAudioPlayer.prev();
     }
 
     private void onIncreaseVolumeButtonClicked(View view) {
@@ -146,7 +149,7 @@ public class CallbacksExampleActivity extends AppCompatActivity
             }
         }
 
-        mAudioPlayer.play(soundItemList);
+        mGaplessAudioPlayer.play(soundItemList);
     }
 
     @Override
@@ -223,7 +226,7 @@ public class CallbacksExampleActivity extends AppCompatActivity
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         if (fromUser)
-            mAudioPlayer.seekTo(progress);
+            mGaplessAudioPlayer.seekTo(progress);
     }
 
     @Override

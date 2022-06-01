@@ -13,12 +13,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.gitlab.aakumykov.app.databinding.ActivityObservableExampleBinding;
+import com.gitlab.aakumykov.app.databinding.ActivityDemoBinding;
 import com.gitlab.aakumykov.gapless_audio_player.GaplessAudioPlayer;
-import com.gitlab.aakumykov.gapless_audio_player.PlayerState;
-import com.gitlab.aakumykov.gapless_audio_player.Progress;
-import com.gitlab.aakumykov.gapless_audio_player.SoundItem;
-import com.gitlab.aakumykov.gapless_audio_player.iAudioPlayer;
+import com.gitlab.aakumykov.gapless_audio_player.GaplessPlayerState;
+import com.gitlab.aakumykov.gapless_audio_player.stuff.Progress;
+import com.gitlab.aakumykov.gapless_audio_player.stuff.SoundItem;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -34,8 +33,8 @@ public class ObservableExampleActivity extends AppCompatActivity
         implements SeekBar.OnSeekBarChangeListener
 {
     private static final String EMPTY_STRING = "";
-    private ActivityObservableExampleBinding mViewBinding;
-    private iAudioPlayer mAudioPlayer;
+    private ActivityDemoBinding mViewBinding;
+    private GaplessAudioPlayer mGaplessAudioPlayer;
     private boolean mProgressTrackingEnabled = false;
 
 
@@ -47,8 +46,10 @@ public class ObservableExampleActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mViewBinding = ActivityObservableExampleBinding.inflate(getLayoutInflater());
+        mViewBinding = ActivityDemoBinding.inflate(getLayoutInflater());
         setContentView(mViewBinding.getRoot());
+
+        mViewBinding.demoLabelView.setText(R.string.observable_example);
 
         mViewBinding.startButton.setOnClickListener(this::onPlayButtonClicked);
         mViewBinding.stopButton.setOnClickListener(this::onStopButtonClicked);
@@ -61,7 +62,7 @@ public class ObservableExampleActivity extends AppCompatActivity
         mViewBinding.seekBar.setOnSeekBarChangeListener(this);
         disableSeekBar();
 
-        mAudioPlayer = new GaplessAudioPlayer();
+        mGaplessAudioPlayer = new GaplessAudioPlayer();
 
         mAudioManager = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
 
@@ -77,32 +78,32 @@ public class ObservableExampleActivity extends AppCompatActivity
 
     private void subscribeToAudioPlayer() {
         mCompositeDisposable.add(
-                mAudioPlayer.getPlayerStateObservable().subscribe(this::onNewPlayerState)
+                mGaplessAudioPlayer.getPlayerStateObservable().subscribe(this::onNewPlayerState)
         );
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        mAudioPlayer.pause(false);
+        mGaplessAudioPlayer.pause(false);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (mAudioPlayer.isPlaying())
-            mAudioPlayer.resume();
+        if (mGaplessAudioPlayer.isPlaying())
+            mGaplessAudioPlayer.resume();
     }
 
 
 
     private void onPlayButtonClicked(View view) {
 
-        if (mAudioPlayer.isInitialized()) {
-            if (mAudioPlayer.isPlaying())
-                mAudioPlayer.pause(true);
+        if (mGaplessAudioPlayer.isInitialized()) {
+            if (mGaplessAudioPlayer.isPlaying())
+                mGaplessAudioPlayer.pause(true);
             else
-                mAudioPlayer.resume();
+                mGaplessAudioPlayer.resume();
         }
         else {
 //            playMusicList();
@@ -111,16 +112,16 @@ public class ObservableExampleActivity extends AppCompatActivity
     }
 
     private void onStopButtonClicked(View view) {
-        if (mAudioPlayer.isInitialized())
-            mAudioPlayer.stop();
+        if (mGaplessAudioPlayer.isInitialized())
+            mGaplessAudioPlayer.stop();
     }
 
     private void onNextButtonClicked(View view) {
-        mAudioPlayer.next();
+        mGaplessAudioPlayer.next();
     }
 
     private void onPrevButtonClicked(View view) {
-        mAudioPlayer.prev();
+        mGaplessAudioPlayer.prev();
     }
 
     private void onIncreaseVolumeButtonClicked(View view) {
@@ -162,7 +163,7 @@ public class ObservableExampleActivity extends AppCompatActivity
             }
         }
 
-        mAudioPlayer.play(soundItemList);
+        mGaplessAudioPlayer.play(soundItemList);
     }
 
     @Override
@@ -173,14 +174,14 @@ public class ObservableExampleActivity extends AppCompatActivity
 
 
 
-    private void onNewPlayerState(PlayerState playerState) {
+    private void onNewPlayerState(GaplessPlayerState playerState) {
 
         switch (playerState.mode) {
             case INACTIVE:
                 break;
 
             case STARTED:
-                onStarted((PlayerState.Started) playerState);
+                onStarted((GaplessPlayerState.Started) playerState);
                 break;
 
             case STOPPED:
@@ -208,11 +209,11 @@ public class ObservableExampleActivity extends AppCompatActivity
                 break;
 
             case PREPARING_ERROR:
-                onPreparingError((PlayerState.PreparingError) playerState);
+                onPreparingError((GaplessPlayerState.PreparingError) playerState);
                 break;
 
             case PLAYING_ERROR:
-                onPlayingError((PlayerState.PlayingError) playerState);
+                onPlayingError((GaplessPlayerState.PlayingError) playerState);
                 break;
 
             default:
@@ -221,7 +222,7 @@ public class ObservableExampleActivity extends AppCompatActivity
     }
 
 
-    private void onStarted(PlayerState.Started startedPlayerState) {
+    private void onStarted(GaplessPlayerState.Started startedPlayerState) {
         startProgressTracking();
         showPauseButton();
         hideError();
@@ -257,7 +258,7 @@ public class ObservableExampleActivity extends AppCompatActivity
         showError(getString(R.string.nothing_to_play));
     }
 
-    private void onPreparingError(PlayerState.PreparingError preparingErrorPlayerState) {
+    private void onPreparingError(GaplessPlayerState.PreparingError preparingErrorPlayerState) {
         String errorMsg = getString(
                 R.string.preparing_error,
                 preparingErrorPlayerState.getSoundItem().getTitle()
@@ -266,7 +267,7 @@ public class ObservableExampleActivity extends AppCompatActivity
         showError(errorMsg);
     }
 
-    private void onPlayingError(PlayerState.PlayingError playingErrorPlayerState) {
+    private void onPlayingError(GaplessPlayerState.PlayingError playingErrorPlayerState) {
         String errorMsg = getString(R.string.playing_error,
                 playingErrorPlayerState.getSoundItem().getTitle(),
                 playingErrorPlayerState.getErrorMessage()
@@ -280,7 +281,7 @@ public class ObservableExampleActivity extends AppCompatActivity
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         if (fromUser)
-            mAudioPlayer.seekTo(progress);
+            mGaplessAudioPlayer.seekTo(progress);
     }
 
     @Override
@@ -328,7 +329,7 @@ public class ObservableExampleActivity extends AppCompatActivity
 
     private void trackProgress() {
 
-        Progress progress = mAudioPlayer.getProgress();
+        Progress progress = mGaplessAudioPlayer.getProgress();
 
         if (null != progress) {
             mViewBinding.seekBar.setProgress(progress.getPosition());

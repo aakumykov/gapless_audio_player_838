@@ -5,14 +5,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="8dp"
-    android:orientation="vertical"
-    tools:context=".ObservableExampleActivity">
+    android:orientation="vertical">
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/demoLabelView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/callbacks_example"
+        android:text="@string/observable_example"
         android:paddingBottom="20dp"
         android:textAlignment="center" />
 
