@@ -2,22 +2,22 @@ package com.gitlab.aakumykov.gapless_audio_player;
 
 import com.gitlab.aakumykov.exception_utils_module.ExceptionUtils;
 
-public class PlayerState {
+public class GaplessPlayerState {
 
     public final Mode mode;
 
 
-    public PlayerState(Mode mode) {
+    public GaplessPlayerState(Mode mode) {
         this.mode = mode;
     }
 
-    public static class Inactive extends PlayerState {
+    public static class Inactive extends GaplessPlayerState {
         public Inactive() {
             super(Mode.INACTIVE);
         }
     }
 
-    public static class Started extends PlayerState {
+    public static class Started extends GaplessPlayerState {
 
         private final SoundItem mSoundItem;
 
@@ -31,37 +31,37 @@ public class PlayerState {
         }
     }
 
-    public static class Stopped extends PlayerState {
+    public static class Stopped extends GaplessPlayerState {
         public Stopped() {
             super(Mode.STOPPED);
         }
     }
 
-    public static class Paused extends PlayerState {
+    public static class Paused extends GaplessPlayerState {
         public Paused() {
             super(Mode.PAUSED);
         }
     }
 
-    public static class Resumed extends PlayerState {
+    public static class Resumed extends GaplessPlayerState {
         public Resumed() {
             super(Mode.RESUMED);
         }
     }
 
-    public static class NoNextTrack extends PlayerState {
+    public static class NoNextTrack extends GaplessPlayerState {
         public NoNextTrack() {
             super(Mode.NO_NEXT_TRACK);
         }
     }
 
-    public static class NoPrevTrack extends PlayerState {
+    public static class NoPrevTrack extends GaplessPlayerState {
         public NoPrevTrack() {
             super(Mode.NO_PREV_TRACK);
         }
     }
 
-    public static class NothingToPlay extends PlayerState {
+    public static class NothingToPlay extends GaplessPlayerState {
         public NothingToPlay() {
             super(Mode.NOTHING_TO_PLAY);
         }
@@ -97,7 +97,7 @@ public class PlayerState {
 
 
 
-    private static class ErrorPlayerState extends PlayerState {
+    private static class ErrorPlayerState extends GaplessPlayerState {
 
         private final Exception mException;
 

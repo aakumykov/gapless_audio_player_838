@@ -9,7 +9,7 @@ import io.reactivex.Observable;
 
 public interface iAudioPlayer {
 
-    Observable<PlayerState> getPlayerStateObservable();
+    Observable<GaplessPlayerState> getPlayerStateObservable();
 
     void play(@NonNull List<SoundItem> soundItemList);
     void play(@NonNull SoundItem soundItem);
