@@ -20,7 +20,7 @@ import static org.junit.Assert.assertFalse;
 public class GaplessAudioPlayerTest {
 
     private GaplessAudioPlayer mAudioPlayer;
-    @Mock private GapplessPlayerCallbacks mCallbacksMock;
+    @Mock private GaplessPlayerCallbacks mCallbacksMock;
 
     public static final String ID1 = UUID.randomUUID().toString();
     public static final String ID2 = UUID.randomUUID().toString();

@@ -16,7 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.gitlab.aakumykov.app.databinding.ActivityDemoBinding;
 import com.gitlab.aakumykov.gapless_audio_player.GaplessAudioPlayer;
-import com.gitlab.aakumykov.gapless_audio_player.GapplessPlayerCallbacks;
+import com.gitlab.aakumykov.gapless_audio_player.GaplessPlayerCallbacks;
 import com.gitlab.aakumykov.gapless_audio_player.stuff.SoundItem;
 
 import java.io.File;
@@ -29,7 +29,7 @@ import permissions.dispatcher.RuntimePermissions;
 
 @RuntimePermissions
 public class CallbacksExampleActivity extends AppCompatActivity
-        implements SeekBar.OnSeekBarChangeListener, GapplessPlayerCallbacks
+        implements SeekBar.OnSeekBarChangeListener, GaplessPlayerCallbacks
 {
     private static final String EMPTY_STRING = "";
     private ActivityDemoBinding mViewBinding;
