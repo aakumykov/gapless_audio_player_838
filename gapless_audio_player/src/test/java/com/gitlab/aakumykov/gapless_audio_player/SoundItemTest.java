@@ -1,11 +1,13 @@
 package com.gitlab.aakumykov.gapless_audio_player;
 
-import static org.junit.Assert.assertEquals;
+import com.gitlab.aakumykov.gapless_audio_player.stuff.SoundItem;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.UUID;
+
+import static org.junit.Assert.assertEquals;
 
 public class SoundItemTest {
 

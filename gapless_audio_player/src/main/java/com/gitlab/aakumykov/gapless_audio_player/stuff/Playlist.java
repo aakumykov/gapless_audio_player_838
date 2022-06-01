@@ -1,4 +1,4 @@
-package com.gitlab.aakumykov.gapless_audio_player;
+package com.gitlab.aakumykov.gapless_audio_player.stuff;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
