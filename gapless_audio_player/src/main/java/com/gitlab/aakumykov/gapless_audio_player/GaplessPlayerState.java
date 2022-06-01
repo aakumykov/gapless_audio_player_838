@@ -1,6 +1,7 @@
 package com.gitlab.aakumykov.gapless_audio_player;
 
 import com.gitlab.aakumykov.exception_utils_module.ExceptionUtils;
+import com.gitlab.aakumykov.gapless_audio_player.stuff.SoundItem;
 
 public class GaplessPlayerState {
 

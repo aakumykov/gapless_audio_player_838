@@ -1,15 +1,16 @@
 package com.gitlab.aakumykov.gapless_audio_player;
 
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-
 import com.gitlab.aakumykov.gapless_audio_player.stubs.SampleItem;
+import com.gitlab.aakumykov.gapless_audio_player.stuff.ChainItem;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.List;
+
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 
 public class ChainItem_ChainingTest {
 

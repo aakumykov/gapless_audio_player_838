@@ -2,7 +2,7 @@ package com.gitlab.aakumykov.gapless_audio_player.stubs;
 
 import androidx.annotation.NonNull;
 
-import com.gitlab.aakumykov.gapless_audio_player.ChainItem;
+import com.gitlab.aakumykov.gapless_audio_player.stuff.ChainItem;
 
 public class SampleItem extends ChainItem {
 

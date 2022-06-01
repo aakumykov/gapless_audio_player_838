@@ -2,6 +2,8 @@ package com.gitlab.aakumykov.gapless_audio_player;
 
 import androidx.annotation.NonNull;
 
+import com.gitlab.aakumykov.gapless_audio_player.stuff.SoundItem;
+
 public interface GapplessPlayerCallbacks {
 
     void onStarted(@NonNull SoundItem soundItem);

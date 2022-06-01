@@ -1,9 +1,11 @@
 package com.gitlab.aakumykov.gapless_audio_player;
 
-import static org.junit.Assert.assertEquals;
+import com.gitlab.aakumykov.gapless_audio_player.stuff.Progress;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 public class ProgressTest {
 

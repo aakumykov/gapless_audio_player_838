@@ -1,15 +1,18 @@
 package com.gitlab.aakumykov.gapless_audio_player;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import com.gitlab.aakumykov.gapless_audio_player.stuff.Player;
+import com.gitlab.aakumykov.gapless_audio_player.stuff.SoundItem;
 
 import org.hamcrest.MatcherAssert;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 public class PlayerTest {
 

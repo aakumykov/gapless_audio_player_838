@@ -4,6 +4,8 @@ import android.content.Context;
 
 import androidx.test.platform.app.InstrumentationRegistry;
 
+import com.gitlab.aakumykov.gapless_audio_player.stuff.SoundItem;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

@@ -7,6 +7,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.gitlab.aakumykov.exception_utils_module.ExceptionUtils;
+import com.gitlab.aakumykov.gapless_audio_player.stuff.Player;
+import com.gitlab.aakumykov.gapless_audio_player.stuff.Playlist;
+import com.gitlab.aakumykov.gapless_audio_player.stuff.Progress;
+import com.gitlab.aakumykov.gapless_audio_player.stuff.SoundItem;
 
 import java.util.ArrayList;
 import java.util.Collections;
