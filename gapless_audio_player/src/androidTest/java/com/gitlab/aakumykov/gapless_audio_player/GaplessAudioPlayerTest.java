@@ -17,7 +17,7 @@ import static org.junit.Assert.assertFalse;
 
 public class GaplessAudioPlayerTest {
 
-    private iAudioPlayer mAudioPlayer;
+    private GaplessAudioPlayer mAudioPlayer;
     @Mock private GapplessPlayerCallbacks mCallbacksMock;
 
     public static final String ID1 = UUID.randomUUID().toString();
