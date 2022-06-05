@@ -48,7 +48,9 @@ public class Playlist {
                 });
 
         if (null == mActiveItem)
-            throw new IllegalStateException("В списке найден элемент, который устанавливается активным");
+            throw new IllegalStateException("Во внутренем списке воспроизведения не найден " +
+                    "текущий активный элемент. Список: " + mItemsList +
+                    "Активный элемент, который там должен быть: "+ mActiveItem);
     }
 
     // TODO: убрать, это используется только в тесте
