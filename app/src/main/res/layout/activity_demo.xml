@@ -92,7 +92,7 @@
             android:layout_marginTop="16dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_increase" />
+            app:srcCompat="@drawable/ic_volume_up" />
 
         <ImageButton
             android:id="@+id/decreaseVolumeButton"
@@ -102,7 +102,7 @@
             android:layout_marginTop="6dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/increaseVolumeButton"
-            app:srcCompat="@drawable/ic_decrease" />
+            app:srcCompat="@drawable/ic_volume_down" />
 
         <TextView
             android:id="@+id/soundVolumeView"
