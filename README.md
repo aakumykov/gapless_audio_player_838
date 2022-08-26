@@ -15,8 +15,10 @@
 **Использование**
 
 Пример проекта в ветке demo.
+Mp3-файлы кладите в каталог Downloads.
 
 **Страница на Jitpack**
 
 https://jitpack.io/#aakumykov/gapless_audio_player_838
+
 [![](https://jitpack.io/v/aakumykov/gapless_audio_player_838.svg)](https://jitpack.io/#aakumykov/gapless_audio_player_838)
